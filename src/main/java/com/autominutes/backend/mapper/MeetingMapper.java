@@ -6,6 +6,10 @@ import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.entity.MeetingAttendee;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import com.autominutes.backend.dto.MeetingCreateRequest;
+import com.autominutes.backend.dto.MeetingUpdateRequest;
+import org.mapstruct.MappingTarget;
+
 
 import java.util.List;
 
@@ -14,6 +18,9 @@ public interface MeetingMapper {
 
     @Mapping(target = "attendees", source = "meetingAttendees")
     MeetingDTO toDto(Meeting meeting);
+    Meeting toEntity(MeetingCreateRequest request);
+    // updates without creating a new instance, it will update the existing meeting entity with the values from the request
+    void updateEntityFromRequest(MeetingUpdateRequest request, @MappingTarget Meeting meeting);
 
     // MapStruct generates automatically this implementantion, it iterates the list
     // and extracts the attendee from every MeetingAttendee
