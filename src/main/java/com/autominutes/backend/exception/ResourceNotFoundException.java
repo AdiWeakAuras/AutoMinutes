@@ -1,0 +1,12 @@
+package com.autominutes.backend.exception;
+
+public class ResourceNotFoundException extends RuntimeException {
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+
+    public static ResourceNotFoundException forMeeting(Long id) {
+        return new ResourceNotFoundException("Meeting with id " + id + " was not found.");
+    }
+}
