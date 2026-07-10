@@ -1,10 +1,12 @@
 package com.autominutes.backend.controller;
 
+import com.autominutes.backend.dto.MeetingCreateRequest;
 import com.autominutes.backend.dto.MeetingDTO;
-import com.autominutes.backend.entity.Meeting;
-import com.autominutes.backend.mapper.MeetingMapper;
-import com.autominutes.backend.repository.MeetingRepository;
-import org.springframework.http.ResponseEntity;
+import com.autominutes.backend.dto.MeetingUpdateRequest;
+import com.autominutes.backend.exception.ResourceNotFoundException;
+import com.autominutes.backend.service.MeetingService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,27 +15,37 @@ import java.util.List;
 @RequestMapping("/api/meetings")
 public class MeetingController {
 
-    private final MeetingRepository meetingRepository;
-    private final MeetingMapper meetingMapper;
+    private final MeetingService meetingService;
 
-    public MeetingController(MeetingRepository meetingRepository, MeetingMapper meetingMapper) {
-        this.meetingRepository = meetingRepository;
-        this.meetingMapper = meetingMapper;
+    public MeetingController(MeetingService meetingService) {
+        this.meetingService = meetingService;
     }
 
     @GetMapping
     public List<MeetingDTO> getAllMeetings() {
-        return meetingRepository.findAll()
-                .stream()
-                .map(meetingMapper::toDto)
-                .toList();
+        return meetingService.getAllMeetings();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable Long id) {
-        return meetingRepository.findById(id)
-                .map(meetingMapper::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public MeetingDTO getMeetingById(@PathVariable Long id) {
+        return meetingService.getMeetingById(id)
+                .orElseThrow(() -> ResourceNotFoundException.forMeeting(id));
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public MeetingDTO createMeeting(@Valid @RequestBody MeetingCreateRequest request) {
+        return meetingService.createMeeting(request);
+    }
+
+    @PutMapping("/{id}")
+    public MeetingDTO updateMeeting(@PathVariable Long id, @Valid @RequestBody MeetingUpdateRequest request) {
+        return meetingService.updateMeeting(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMeeting(@PathVariable Long id) {
+        meetingService.deleteMeeting(id);
     }
 }
