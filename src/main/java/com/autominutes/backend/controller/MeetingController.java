@@ -1,9 +1,7 @@
 package com.autominutes.backend.controller;
 
 import com.autominutes.backend.dto.MeetingDTO;
-import com.autominutes.backend.entity.Meeting;
-import com.autominutes.backend.mapper.MeetingMapper;
-import com.autominutes.backend.repository.MeetingRepository;
+import com.autominutes.backend.service.MeetingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,26 +11,20 @@ import java.util.List;
 @RequestMapping("/api/meetings")
 public class MeetingController {
 
-    private final MeetingRepository meetingRepository;
-    private final MeetingMapper meetingMapper;
+    private final MeetingService meetingService;
 
-    public MeetingController(MeetingRepository meetingRepository, MeetingMapper meetingMapper) {
-        this.meetingRepository = meetingRepository;
-        this.meetingMapper = meetingMapper;
+    public MeetingController(MeetingService meetingService) {
+        this.meetingService = meetingService;
     }
 
     @GetMapping
     public List<MeetingDTO> getAllMeetings() {
-        return meetingRepository.findAll()
-                .stream()
-                .map(meetingMapper::toDto)
-                .toList();
+        return meetingService.getAllMeetings();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable Long id) {
-        return meetingRepository.findById(id)
-                .map(meetingMapper::toDto)
+        return meetingService.getMeetingById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
