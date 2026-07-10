@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 import com.autominutes.backend.dto.MeetingCreateRequest;
 import com.autominutes.backend.dto.MeetingUpdateRequest;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 
 import java.util.List;
@@ -19,8 +20,11 @@ public interface MeetingMapper {
     @Mapping(target = "attendees", source = "meetingAttendees")
     MeetingDTO toDto(Meeting meeting);
     Meeting toEntity(MeetingCreateRequest request);
-    // updates without creating a new instance, it will update the existing meeting entity with the values from the request
+    // now if any field is null in the request it doesnt override the actual value in the entity
+    @Mapping(target = "id", ignore = true)
+    @org.mapstruct.BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(MeetingUpdateRequest request, @MappingTarget Meeting meeting);
+
 
     // extracts the attendee from every MeetingAttendee
     default List<AttendeeDTO> mapAttendees(List<MeetingAttendee> meetingAttendees) {
