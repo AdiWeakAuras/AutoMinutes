@@ -22,8 +22,7 @@ public interface MeetingMapper {
     // updates without creating a new instance, it will update the existing meeting entity with the values from the request
     void updateEntityFromRequest(MeetingUpdateRequest request, @MappingTarget Meeting meeting);
 
-    // MapStruct generates automatically this implementantion, it iterates the list
-    // and extracts the attendee from every MeetingAttendee
+    // extracts the attendee from every MeetingAttendee
     default List<AttendeeDTO> mapAttendees(List<MeetingAttendee> meetingAttendees) {
         return meetingAttendees.stream()
                 .map(ma -> toAttendeeDto(ma))
