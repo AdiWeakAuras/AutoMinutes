@@ -1,8 +1,12 @@
 package com.autominutes.backend.controller;
 
+import com.autominutes.backend.dto.MeetingCreateRequest;
 import com.autominutes.backend.dto.MeetingDTO;
+import com.autominutes.backend.dto.MeetingUpdateRequest;
+import com.autominutes.backend.exception.ResourceNotFoundException;
 import com.autominutes.backend.service.MeetingService;
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,9 +27,25 @@ public class MeetingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MeetingDTO> getMeetingById(@PathVariable Long id) {
+    public MeetingDTO getMeetingById(@PathVariable Long id) {
         return meetingService.getMeetingById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> ResourceNotFoundException.forMeeting(id));
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public MeetingDTO createMeeting(@Valid @RequestBody MeetingCreateRequest request) {
+        return meetingService.createMeeting(request);
+    }
+
+    @PutMapping("/{id}")
+    public MeetingDTO updateMeeting(@PathVariable Long id, @Valid @RequestBody MeetingUpdateRequest request) {
+        return meetingService.updateMeeting(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMeeting(@PathVariable Long id) {
+        meetingService.deleteMeeting(id);
     }
 }
