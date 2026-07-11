@@ -6,6 +6,7 @@ import com.autominutes.backend.dto.AttendeeUpdateRequest;
 import com.autominutes.backend.entity.Attendee;
 import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.entity.MeetingAttendee;
+import com.autominutes.backend.exception.DuplicateResourceException;
 import com.autominutes.backend.exception.ResourceNotFoundException;
 import com.autominutes.backend.mapper.AttendeeMapper;
 import com.autominutes.backend.repository.AttendeeRepository;
@@ -49,21 +50,20 @@ public class AttendeeService {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
 
-        Attendee attendee = findOrCreateAttendee(request);
-
-        // searches for duplicates
-        boolean alreadyLinked = meetingAttendeeRepository
-                .findByMeetingIdAndAttendeeId(meetingId, attendee.getId())
-                .isPresent();
-
-        if (!alreadyLinked) {
-            MeetingAttendee link = new MeetingAttendee();
-            link.setMeeting(meeting);
-            link.setAttendee(attendee);
-            meetingAttendeeRepository.save(link);
+        // reject if email is already used by another attendee
+        if (attendeeRepository.findByEmail(request.email()).isPresent()) {
+            throw DuplicateResourceException.forAttendeeEmail(request.email());
         }
 
-        return attendeeMapper.toDto(attendee);
+        Attendee attendee = attendeeMapper.toEntity(request);
+        Attendee savedAttendee = attendeeRepository.save(attendee);
+
+        MeetingAttendee link = new MeetingAttendee();
+        link.setMeeting(meeting);
+        link.setAttendee(savedAttendee);
+        meetingAttendeeRepository.save(link);
+
+        return attendeeMapper.toDto(savedAttendee);
     }
 
     private Attendee findOrCreateAttendee(AttendeeCreateRequest request) {
