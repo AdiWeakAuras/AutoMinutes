@@ -14,8 +14,8 @@ public class AIResult {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "meeting_id", nullable = false)
-    private Meeting meeting;
+    @JoinColumn(name = "transcript_id", nullable = false)
+    private Transcript transcript;
 
     @ManyToOne
     @JoinColumn(name = "prompt_template_id", nullable = false)
@@ -55,8 +55,8 @@ public class AIResult {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public Meeting getMeeting() { return meeting; }
-    public void setMeeting(Meeting meeting) { this.meeting = meeting; }
+    public Transcript getTranscript() { return transcript; }
+    public void setTranscript(Transcript transcript) { this.transcript = transcript; }
     public PromptTemplate getPromptTemplate() { return promptTemplate; }
     public void setPromptTemplate(PromptTemplate promptTemplate) { this.promptTemplate = promptTemplate; }
     public String getSummary() { return summary; }

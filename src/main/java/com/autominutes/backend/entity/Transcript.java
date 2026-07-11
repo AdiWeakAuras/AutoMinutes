@@ -2,6 +2,8 @@ package com.autominutes.backend.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "transcript")
@@ -15,6 +17,9 @@ public class Transcript {
     @OneToOne
     @JoinColumn(name = "meeting_id", nullable = false)
     private Meeting meeting;
+
+    @OneToMany(mappedBy = "transcript", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AIResult> aiResults = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
@@ -44,4 +49,5 @@ public class Transcript {
     public void setContent(String content) { this.content = content; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public List<AIResult> getAiResults() { return aiResults; }
 }

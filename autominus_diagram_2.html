@@ -26,7 +26,7 @@ const { svg } = await mermaid.render('erd-svg', `erDiagram
   MEETING ||--o{ MEETING_ATTENDEE : "has"
   ATTENDEE ||--o{ MEETING_ATTENDEE : "participates in"
   MEETING ||--|| TRANSCRIPT : "generates"
-  MEETING ||--o{ AI_RESULT : "analyzed by"
+  TRANSCRIPT ||--o{ AI_RESULT : "analyzed by"
   AI_RESULT ||--o{ ACTION_ITEM : "contains"
   PROMPT_TEMPLATE ||--o{ AI_RESULT : "applied in"
 
@@ -67,7 +67,7 @@ const { svg } = await mermaid.render('erd-svg', `erDiagram
 
   AI_RESULT {
     bigint id PK
-    bigint meeting_id FK "NOT NULL"
+    bigint transcript_id FK "NOT NULL"
     bigint prompt_template_id FK "NOT NULL"
     text summary
     text detailed_summary
