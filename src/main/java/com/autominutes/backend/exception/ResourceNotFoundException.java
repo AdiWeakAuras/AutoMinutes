@@ -9,4 +9,8 @@ public class ResourceNotFoundException extends RuntimeException {
     public static ResourceNotFoundException forMeeting(Long id) {
         return new ResourceNotFoundException("Meeting with id " + id + " was not found.");
     }
+    public static ResourceNotFoundException forAttendee(Long id) {
+        return new ResourceNotFoundException("Attendee with id " + id + " was not found.");
+    }
+
 }
