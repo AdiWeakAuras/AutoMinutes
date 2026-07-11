@@ -10,6 +10,6 @@ public record MeetingDTO(
         LocalDateTime meetingDate,
         String processingStatus,
         TranscriptDTO transcript,
-        List<AttendeeDTO> attendees,
-        List<AIResultDTO> aiResults
+        List<AttendeeDTO> attendees
+
 ) {}
