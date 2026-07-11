@@ -80,6 +80,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateResourceException ex, WebRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                ex.getMessage(),
+                extractPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     private String extractPath(WebRequest request) {
         return request.getDescription(false).replace("uri=", "");
     }

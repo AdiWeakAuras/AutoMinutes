@@ -49,15 +49,31 @@ public class AttendeeService {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
 
-        Attendee attendee = attendeeMapper.toEntity(request);
-        Attendee savedAttendee = attendeeRepository.save(attendee);
+        Attendee attendee = findOrCreateAttendee(request);
 
-        MeetingAttendee link = new MeetingAttendee();
-        link.setMeeting(meeting);
-        link.setAttendee(savedAttendee);
-        meetingAttendeeRepository.save(link);
+        // searches for duplicates
+        boolean alreadyLinked = meetingAttendeeRepository
+                .findByMeetingIdAndAttendeeId(meetingId, attendee.getId())
+                .isPresent();
 
-        return attendeeMapper.toDto(savedAttendee);
+        if (!alreadyLinked) {
+            MeetingAttendee link = new MeetingAttendee();
+            link.setMeeting(meeting);
+            link.setAttendee(attendee);
+            meetingAttendeeRepository.save(link);
+        }
+
+        return attendeeMapper.toDto(attendee);
+    }
+
+    private Attendee findOrCreateAttendee(AttendeeCreateRequest request) {
+        // searches after email
+        if (request.email() != null && !request.email().isBlank()) {
+            return attendeeRepository.findByEmail(request.email())
+                    .orElseGet(() -> attendeeRepository.save(attendeeMapper.toEntity(request)));
+        }
+        // without email, it creates a new attendee every time
+        return attendeeRepository.save(attendeeMapper.toEntity(request));
     }
 
     @Transactional
