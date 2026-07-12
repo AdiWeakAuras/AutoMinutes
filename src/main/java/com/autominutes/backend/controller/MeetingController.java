@@ -38,7 +38,7 @@ public class MeetingController {
         return meetingService.createMeeting(request);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public MeetingDTO updateMeeting(@PathVariable Long id, @Valid @RequestBody MeetingUpdateRequest request) {
         return meetingService.updateMeeting(id, request);
     }
