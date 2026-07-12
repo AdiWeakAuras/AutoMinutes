@@ -5,43 +5,43 @@ import com.autominutes.backend.dto.TranscriptDTO;
 import com.autominutes.backend.dto.TranscriptUpdateRequest;
 
 /**
- * Serviciu pentru gestionarea transcript-ului unui meeting.
+ * Service for managing a meeting's transcript.
  * <p>
- * Acopera cerinta 3.3 din specificatia backend-ului (Transcript Storage).
- * Relatia meeting-transcript este 1-la-1: un meeting poate avea cel mult un transcript.
+ * Covers requirement 3.3 of the backend specification (Transcript Storage).
+ * The meeting-transcript relationship is one-to-one: a meeting can have at most one transcript.
  */
 public interface TranscriptService {
 
     /**
-     * Returneaza transcript-ul asociat unui meeting.
+     * Returns the transcript associated with a meeting.
      *
-     * @param meetingId id-ul meeting-ului
-     * @return DTO-ul transcript-ului
-     * @throws com.autominutes.backend.exception.ResourceNotFoundException daca meeting-ul nu exista
-     *                                                                     sau nu are niciun transcript asociat
+     * @param meetingId the id of the meeting
+     * @return the transcript DTO
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting does not exist
+     *                                                                     or has no associated transcript
      */
     TranscriptDTO getTranscriptForMeeting(Long meetingId);
 
     /**
-     * Inregistreaza transcript-ul brut al unui meeting. Poate fi apelat o singura data
-     * per meeting; pentru corectii ulterioare se foloseste {@link #updateTranscript}.
+     * Submits the raw transcript for a meeting. Can only be called once per meeting;
+     * subsequent corrections should use {@link #updateTranscript}.
      *
-     * @param meetingId id-ul meeting-ului
-     * @param request   continutul transcript-ului (obligatoriu, poate fi text lung)
-     * @return transcript-ul nou creat
-     * @throws com.autominutes.backend.exception.ResourceNotFoundException  daca meeting-ul nu exista
-     * @throws com.autominutes.backend.exception.DuplicateResourceException daca meeting-ul are deja un transcript
+     * @param meetingId the id of the meeting
+     * @param request   the transcript content (required, may be long text)
+     * @return the newly created transcript
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException  if the meeting does not exist
+     * @throws com.autominutes.backend.exception.DuplicateResourceException if the meeting already has a transcript
      */
     TranscriptDTO submitTranscript(Long meetingId, TranscriptCreateRequest request);
 
     /**
-     * Inlocuieste integral continutul unui transcript existent.
+     * Fully replaces the content of an existing transcript.
      *
-     * @param meetingId id-ul meeting-ului
-     * @param request   noul continut (obligatoriu)
-     * @return transcript-ul actualizat
-     * @throws com.autominutes.backend.exception.ResourceNotFoundException daca meeting-ul nu exista
-     *                                                                     sau nu are niciun transcript asociat
+     * @param meetingId the id of the meeting
+     * @param request   the new content (required)
+     * @return the updated transcript
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting does not exist
+     *                                                                     or has no associated transcript
      */
     TranscriptDTO updateTranscript(Long meetingId, TranscriptUpdateRequest request);
 }

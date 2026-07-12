@@ -18,6 +18,17 @@ repositories {
 	mavenCentral()
 }
 
+tasks.register('serviceJavadoc', Javadoc) {
+    source = sourceSets.main.allJava
+    include 'com/autominutes/backend/service/**'
+    exclude 'com/autominutes/backend/service/impl/**'
+    classpath = sourceSets.main.compileClasspath
+    destinationDir = file("$buildDir/docs/service-javadoc")
+
+    // spunem javadoc-ului unde sa caute clasele referite (DTO, entity) chiar daca nu genereaza pagini pentru ele
+    options.addStringOption('sourcepath', file('src/main/java').absolutePath)
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'

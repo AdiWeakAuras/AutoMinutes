@@ -14,9 +14,7 @@ import com.autominutes.backend.service.TranscriptService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Implementare standard a {@link TranscriptService}, bazata pe Spring Data JPA si MapStruct.
- */
+
 @Service
 @Transactional(readOnly = true)
 public class TranscriptServiceImpl implements TranscriptService {

@@ -14,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Implementare standard a {@link MeetingService}, bazata pe Spring Data JPA si MapStruct.
- */
+
 @Service
 @Transactional(readOnly = true)
 public class MeetingServiceImpl implements MeetingService {

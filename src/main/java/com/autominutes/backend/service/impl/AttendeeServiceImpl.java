@@ -18,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Implementare standard a {@link AttendeeService}, bazata pe Spring Data JPA si MapStruct.
- */
+
 @Service
 @Transactional(readOnly = true)
 public class AttendeeServiceImpl implements AttendeeService {
