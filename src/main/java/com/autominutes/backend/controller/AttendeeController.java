@@ -25,6 +25,11 @@ public class AttendeeController {
         return attendeeService.getAttendeesForMeeting(meetingId);
     }
 
+    @GetMapping("/{attendeeId}")
+    public AttendeeDTO getAttendeeById(@PathVariable Long meetingId, @PathVariable Long attendeeId) {
+        return attendeeService.getAttendeeForMeeting(meetingId, attendeeId);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AttendeeDTO addAttendee(@PathVariable Long meetingId,
@@ -32,7 +37,7 @@ public class AttendeeController {
         return attendeeService.addAttendeeToMeeting(meetingId, request);
     }
 
-    @PutMapping("/{attendeeId}")
+    @PatchMapping("/{attendeeId}")
     public AttendeeDTO updateAttendee(@PathVariable Long meetingId,
                                       @PathVariable Long attendeeId,
                                       @Valid @RequestBody AttendeeUpdateRequest request) {

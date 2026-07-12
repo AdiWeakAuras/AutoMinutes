@@ -3,96 +3,71 @@ package com.autominutes.backend.service;
 import com.autominutes.backend.dto.AttendeeCreateRequest;
 import com.autominutes.backend.dto.AttendeeDTO;
 import com.autominutes.backend.dto.AttendeeUpdateRequest;
-import com.autominutes.backend.entity.Attendee;
-import com.autominutes.backend.entity.Meeting;
-import com.autominutes.backend.entity.MeetingAttendee;
-import com.autominutes.backend.exception.DuplicateResourceException;
-import com.autominutes.backend.exception.ResourceNotFoundException;
-import com.autominutes.backend.mapper.AttendeeMapper;
-import com.autominutes.backend.repository.AttendeeRepository;
-import com.autominutes.backend.repository.MeetingAttendeeRepository;
-import com.autominutes.backend.repository.MeetingRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
-@Transactional(readOnly = true)
-public class AttendeeService {
+/**
+ * Service for managing attendees associated with a meeting.
+ * <p>
+ * Covers requirement 3.2 of the backend specification (Attendee Management).
+ * The meeting-attendee relationship is many-to-many: the same attendee (uniquely
+ * identified by email) can be associated with multiple meetings, through the
+ * {@code meeting_attendee} junction table.
+ */
+public interface AttendeeService {
 
-    private final AttendeeRepository attendeeRepository;
-    private final MeetingRepository meetingRepository;
-    private final MeetingAttendeeRepository meetingAttendeeRepository;
-    private final AttendeeMapper attendeeMapper;
+    /**
+     * Lists all attendees associated with a meeting.
+     *
+     * @param meetingId the id of the meeting
+     * @return list of attendees, may be empty
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting does not exist
+     */
+    List<AttendeeDTO> getAttendeesForMeeting(Long meetingId);
 
-    public AttendeeService(AttendeeRepository attendeeRepository,
-                           MeetingRepository meetingRepository,
-                           MeetingAttendeeRepository meetingAttendeeRepository,
-                           AttendeeMapper attendeeMapper) {
-        this.attendeeRepository = attendeeRepository;
-        this.meetingRepository = meetingRepository;
-        this.meetingAttendeeRepository = meetingAttendeeRepository;
-        this.attendeeMapper = attendeeMapper;
-    }
+    /**
+     * Returns a specific attendee, only if associated with the given meeting.
+     *
+     * @param meetingId  the id of the meeting
+     * @param attendeeId the id of the attendee
+     * @return the attendee DTO
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting-attendee link does not exist
+     */
+    AttendeeDTO getAttendeeForMeeting(Long meetingId, Long attendeeId);
 
-    public List<AttendeeDTO> getAttendeesForMeeting(Long meetingId) {
-        if (!meetingRepository.existsById(meetingId)) {
-            throw ResourceNotFoundException.forMeeting(meetingId);
-        }
-        return meetingAttendeeRepository.findByMeetingId(meetingId).stream()
-                .map(ma -> attendeeMapper.toDto(ma.getAttendee()))
-                .toList();
-    }
+    /**
+     * Adds an attendee to a meeting. If an attendee with the same email already exists
+     * in the system (regardless of other meetings), it is reused (no duplicate is created);
+     * only a new link is created in {@code meeting_attendee}.
+     *
+     * @param meetingId the id of the meeting the attendee is being added to
+     * @param request   the attendee's data (name, email required, role)
+     * @return the attendee (newly created or reused)
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException  if the meeting does not exist
+     * @throws com.autominutes.backend.exception.DuplicateResourceException if the attendee is already linked to this meeting
+     */
+    AttendeeDTO addAttendeeToMeeting(Long meetingId, AttendeeCreateRequest request);
 
-    @Transactional
-    public AttendeeDTO addAttendeeToMeeting(Long meetingId, AttendeeCreateRequest request) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
+    /**
+     * Partially updates an attendee's details. Fields left unset (null) remain unchanged.
+     * The update affects the attendee globally (and therefore also their appearances
+     * at other meetings).
+     *
+     * @param meetingId  the id of the meeting (used to validate the link)
+     * @param attendeeId the id of the attendee to update
+     * @param request    the fields to update
+     * @return the updated attendee
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting-attendee link does not exist
+     */
+    AttendeeDTO updateAttendee(Long meetingId, Long attendeeId, AttendeeUpdateRequest request);
 
-        // reject if email is already used by another attendee
-        if (attendeeRepository.findByEmail(request.email()).isPresent()) {
-            throw DuplicateResourceException.forAttendeeEmail(request.email());
-        }
-
-        Attendee attendee = attendeeMapper.toEntity(request);
-        Attendee savedAttendee = attendeeRepository.save(attendee);
-
-        MeetingAttendee link = new MeetingAttendee();
-        link.setMeeting(meeting);
-        link.setAttendee(savedAttendee);
-        meetingAttendeeRepository.save(link);
-
-        return attendeeMapper.toDto(savedAttendee);
-    }
-
-    private Attendee findOrCreateAttendee(AttendeeCreateRequest request) {
-        // searches after email
-        if (request.email() != null && !request.email().isBlank()) {
-            return attendeeRepository.findByEmail(request.email())
-                    .orElseGet(() -> attendeeRepository.save(attendeeMapper.toEntity(request)));
-        }
-        // without email, it creates a new attendee every time
-        return attendeeRepository.save(attendeeMapper.toEntity(request));
-    }
-
-    @Transactional
-    public AttendeeDTO updateAttendee(Long meetingId, Long attendeeId, AttendeeUpdateRequest request) {
-        MeetingAttendee link = meetingAttendeeRepository.findByMeetingIdAndAttendeeId(meetingId, attendeeId)
-                .orElseThrow(() -> ResourceNotFoundException.forAttendee(attendeeId));
-
-        Attendee attendee = link.getAttendee();
-        attendeeMapper.updateEntityFromRequest(request, attendee);
-        Attendee saved = attendeeRepository.save(attendee);
-
-        return attendeeMapper.toDto(saved);
-    }
-
-    @Transactional
-    public void removeAttendeeFromMeeting(Long meetingId, Long attendeeId) {
-        MeetingAttendee link = meetingAttendeeRepository.findByMeetingIdAndAttendeeId(meetingId, attendeeId)
-                .orElseThrow(() -> ResourceNotFoundException.forAttendee(attendeeId));
-
-        meetingAttendeeRepository.delete(link);
-    }
+    /**
+     * Removes an attendee from a meeting (deletes only the link in {@code meeting_attendee}).
+     * The {@code Attendee} entity itself is not deleted, and remains valid for other meetings.
+     *
+     * @param meetingId  the id of the meeting
+     * @param attendeeId the id of the attendee to remove
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting-attendee link does not exist
+     */
+    void removeAttendeeFromMeeting(Long meetingId, Long attendeeId);
 }

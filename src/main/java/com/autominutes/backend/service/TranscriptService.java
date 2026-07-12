@@ -3,76 +3,45 @@ package com.autominutes.backend.service;
 import com.autominutes.backend.dto.TranscriptCreateRequest;
 import com.autominutes.backend.dto.TranscriptDTO;
 import com.autominutes.backend.dto.TranscriptUpdateRequest;
-import com.autominutes.backend.entity.Meeting;
-import com.autominutes.backend.entity.Transcript;
-import com.autominutes.backend.exception.DuplicateResourceException;
-import com.autominutes.backend.exception.ResourceNotFoundException;
-import com.autominutes.backend.mapper.TranscriptMapper;
-import com.autominutes.backend.repository.MeetingRepository;
-import com.autominutes.backend.repository.TranscriptRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional(readOnly = true)
-public class TranscriptService {
+/**
+ * Service for managing a meeting's transcript.
+ * <p>
+ * Covers requirement 3.3 of the backend specification (Transcript Storage).
+ * The meeting-transcript relationship is one-to-one: a meeting can have at most one transcript.
+ */
+public interface TranscriptService {
 
-    private final TranscriptRepository transcriptRepository;
-    private final MeetingRepository meetingRepository;
-    private final TranscriptMapper transcriptMapper;
+    /**
+     * Returns the transcript associated with a meeting.
+     *
+     * @param meetingId the id of the meeting
+     * @return the transcript DTO
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting does not exist
+     *                                                                     or has no associated transcript
+     */
+    TranscriptDTO getTranscriptForMeeting(Long meetingId);
 
-    public TranscriptService(TranscriptRepository transcriptRepository,
-                             MeetingRepository meetingRepository,
-                             TranscriptMapper transcriptMapper) {
-        this.transcriptRepository = transcriptRepository;
-        this.meetingRepository = meetingRepository;
-        this.transcriptMapper = transcriptMapper;
-    }
+    /**
+     * Submits the raw transcript for a meeting. Can only be called once per meeting;
+     * subsequent corrections should use {@link #updateTranscript}.
+     *
+     * @param meetingId the id of the meeting
+     * @param request   the transcript content (required, may be long text)
+     * @return the newly created transcript
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException  if the meeting does not exist
+     * @throws com.autominutes.backend.exception.DuplicateResourceException if the meeting already has a transcript
+     */
+    TranscriptDTO submitTranscript(Long meetingId, TranscriptCreateRequest request);
 
-    public TranscriptDTO getTranscriptForMeeting(Long meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
-
-        Transcript transcript = meeting.getTranscript();
-        if (transcript == null) {
-            throw ResourceNotFoundException.forTranscript(meetingId);
-        }
-        return transcriptMapper.toDto(transcript);
-    }
-
-    @Transactional
-    public TranscriptDTO submitTranscript(Long meetingId, TranscriptCreateRequest request) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
-
-        if (meeting.getTranscript() != null) {
-            throw DuplicateResourceException.forTranscript(meetingId);
-        }
-
-        Transcript transcript = transcriptMapper.toEntity(request);
-        transcript.setMeeting(meeting);
-        Transcript savedTranscript = transcriptRepository.save(transcript);
-
-        // completing the bidirectional relationship
-        meeting.setTranscript(savedTranscript);
-        meetingRepository.save(meeting);
-
-        return transcriptMapper.toDto(savedTranscript);
-    }
-
-    @Transactional
-    public TranscriptDTO updateTranscript(Long meetingId, TranscriptUpdateRequest request) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
-
-        Transcript transcript = meeting.getTranscript();
-        if (transcript == null) {
-            throw ResourceNotFoundException.forTranscript(meetingId);
-        }
-
-        transcript.setContent(request.content());
-        Transcript saved = transcriptRepository.save(transcript);
-
-        return transcriptMapper.toDto(saved);
-    }
+    /**
+     * Fully replaces the content of an existing transcript.
+     *
+     * @param meetingId the id of the meeting
+     * @param request   the new content (required)
+     * @return the updated transcript
+     * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting does not exist
+     *                                                                     or has no associated transcript
+     */
+    TranscriptDTO updateTranscript(Long meetingId, TranscriptUpdateRequest request);
 }
