@@ -45,35 +45,36 @@ public class AttendeeService {
                 .toList();
     }
 
+    public AttendeeDTO getAttendeeForMeeting(Long meetingId, Long attendeeId) {
+        MeetingAttendee link = meetingAttendeeRepository.findByMeetingIdAndAttendeeId(meetingId, attendeeId)
+                .orElseThrow(() -> ResourceNotFoundException.forAttendee(attendeeId));
+        return attendeeMapper.toDto(link.getAttendee());
+    }
+
     @Transactional
     public AttendeeDTO addAttendeeToMeeting(Long meetingId, AttendeeCreateRequest request) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
 
-        // reject if email is already used by another attendee
-        if (attendeeRepository.findByEmail(request.email()).isPresent()) {
-            throw DuplicateResourceException.forAttendeeEmail(request.email());
-        }
+        // cautam dupa email - daca exista deja, il refolosim in loc sa cream unul nou
+        Attendee attendee = attendeeRepository.findByEmail(request.email())
+                .orElseGet(() -> attendeeRepository.save(attendeeMapper.toEntity(request)));
 
-        Attendee attendee = attendeeMapper.toEntity(request);
-        Attendee savedAttendee = attendeeRepository.save(attendee);
+        // verificam daca e deja legat de ACEST meeting - asta e singurul caz de duplicat real
+        boolean alreadyLinked = meetingAttendeeRepository
+                .findByMeetingIdAndAttendeeId(meetingId, attendee.getId())
+                .isPresent();
+
+        if (alreadyLinked) {
+            throw DuplicateResourceException.forAttendeeAlreadyInMeeting(request.email(), meetingId);
+        }
 
         MeetingAttendee link = new MeetingAttendee();
         link.setMeeting(meeting);
-        link.setAttendee(savedAttendee);
+        link.setAttendee(attendee);
         meetingAttendeeRepository.save(link);
 
-        return attendeeMapper.toDto(savedAttendee);
-    }
-
-    private Attendee findOrCreateAttendee(AttendeeCreateRequest request) {
-        // searches after email
-        if (request.email() != null && !request.email().isBlank()) {
-            return attendeeRepository.findByEmail(request.email())
-                    .orElseGet(() -> attendeeRepository.save(attendeeMapper.toEntity(request)));
-        }
-        // without email, it creates a new attendee every time
-        return attendeeRepository.save(attendeeMapper.toEntity(request));
+        return attendeeMapper.toDto(attendee);
     }
 
     @Transactional

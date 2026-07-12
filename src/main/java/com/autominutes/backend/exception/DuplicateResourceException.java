@@ -6,8 +6,9 @@ public class DuplicateResourceException extends RuntimeException {
         super(message);
     }
 
-    public static DuplicateResourceException forAttendeeEmail(String email) {
-        return new DuplicateResourceException("Exista deja un attendee cu email-ul: " + email);
+    public static DuplicateResourceException forAttendeeAlreadyInMeeting(String email, Long meetingId) {
+        return new DuplicateResourceException(
+                "Attendee with email-ul " + email + " is already linked to the meeting with id " + meetingId);
     }
 
     public static DuplicateResourceException forTranscript(Long meetingId) {

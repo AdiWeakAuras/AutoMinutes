@@ -19,7 +19,9 @@ public interface MeetingMapper {
 
     @Mapping(target = "attendees", source = "meetingAttendees")
     MeetingDTO toDto(Meeting meeting);
+
     Meeting toEntity(MeetingCreateRequest request);
+
     // now if any field is null in the request it doesn't override the actual value in the entity
     @Mapping(target = "id", ignore = true)
     @org.mapstruct.BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
