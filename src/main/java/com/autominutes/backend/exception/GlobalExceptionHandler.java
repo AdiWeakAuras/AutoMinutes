@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
-                "A aparut o eroare neasteptata. Contactati administratorul daca problema persista.",
+                "An unexpected error has occured.",
                 extractPath(request)
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
