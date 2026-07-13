@@ -12,9 +12,9 @@ public class ActionItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "ai_result_id", nullable = false)
-    private AIResult aiResult;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "ai_result_id", nullable = false)
+  private AIResult aiResult;
 
     @Column(nullable = false, length = 500)
     private String description;
