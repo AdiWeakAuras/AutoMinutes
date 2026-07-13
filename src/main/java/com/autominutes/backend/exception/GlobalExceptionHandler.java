@@ -1,5 +1,7 @@
 package com.autominutes.backend.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,9 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log =
+            LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
 
     // 404 - meeting/entitate not found (ex: DELETE/GET/PUT on an id that doesn't exist)
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -90,6 +95,32 @@ public class GlobalExceptionHandler {
                 extractPath(request)
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    // 503 - LLM provider unreachable
+    @ExceptionHandler(LlmCommunicationException.class)
+    public ResponseEntity<ErrorResponse> handleLlmCommunication(LlmCommunicationException ex, WebRequest request) {
+        log.warn("LLM provider unreachable on {}: {}", extractPath(request), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "Service Unavailable",
+                "The AI processing service is currently unreachable. Please try again shortly.",
+                extractPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
+    }
+
+    // 502 - LLM handled the request but returned a response that could not be processed (ex: invalid JSON, missing fields)
+    @ExceptionHandler(AiProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleAiProcessing(AiProcessingException ex, WebRequest request) {
+        log.error("AI response could not be processed on {}", extractPath(request), ex);
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_GATEWAY.value(),
+                "Bad Gateway",
+                "The AI model returned a response that could not be processed. " + ex.getMessage(),
+                extractPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(error);
     }
 
     private String extractPath(WebRequest request) {
