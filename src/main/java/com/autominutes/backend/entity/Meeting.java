@@ -22,10 +22,12 @@ public class Meeting {
     @Column(name = "meeting_date", nullable = false)
     private LocalDateTime meetingDate;
 
-    // Coloana transcript_id exista in tabela meeting (ON DELETE SET NULL)
-    @OneToOne
-    @JoinColumn(name = "transcript_id")
-    private Transcript transcript;
+  @OneToOne(
+      mappedBy = "meeting",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  private Transcript transcript;
 
     @Column(name = "processing_status", nullable = false)
     private String processingStatus = "PENDING";
