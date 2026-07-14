@@ -1,0 +1,297 @@
+<mat-sidenav-container class="shell">
+  <!-- Sidebar -->
+  <mat-sidenav mode="side" opened class="sidebar" [fixedInViewport]="false">
+    <div class="brand">
+      <div class="brand__icon">AM</div>
+      <div>
+        <div class="brand__name">AutoMinutes</div>
+        <div class="brand__tag">AI Meeting Manager</div>
+      </div>
+    </div>
+
+    <mat-nav-list class="nav">
+      <a
+        mat-list-item
+        *ngFor="let item of navItems"
+        [class.nav__item--active]="item.label === 'Meetings'"
+      >
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle>{{ item.label }}</span>
+      </a>
+    </mat-nav-list>
+
+    <mat-card class="credits" appearance="outlined">
+      <div class="credits__label">Processing Credits</div>
+      <div class="credits__value">{{ processingCreditsUsed }} / {{ processingCreditsLimit }}</div>
+      <div class="credits__hint">used this month</div>
+      <mat-progress-bar mode="determinate" [value]="processingCreditsPercent"></mat-progress-bar>
+      <div class="credits__renew">Renews on Aug 1, 2026</div>
+    </mat-card>
+
+    <a mat-button class="help">
+      <mat-icon>help_outline</mat-icon>
+      Help &amp; Support
+    </a>
+  </mat-sidenav>
+
+  <!-- Main -->
+  <mat-sidenav-content class="main">
+    <mat-toolbar class="topbar">
+      <div class="breadcrumb">
+        <span>Meetings</span>
+        <mat-icon class="breadcrumb__sep">chevron_right</mat-icon>
+        <span class="breadcrumb__current">{{ selectedMeeting.title }}</span>
+      </div>
+
+      <span class="spacer"></span>
+
+      <button mat-icon-button matBadge="3" matBadgeColor="warn" matBadgeSize="small" matTooltip="Notifications">
+        <mat-icon>notifications_none</mat-icon>
+      </button>
+
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user">
+        <div class="user__avatar">AP</div>
+        <div class="user__text">
+          <div class="user__name">Ana Popescu</div>
+          <div class="user__role">Project Manager</div>
+        </div>
+        <mat-icon>expand_more</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item>Profile</button>
+        <button mat-menu-item>Sign out</button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="content">
+      <!-- Meetings list panel -->
+      <section class="list-panel">
+        <div class="list-panel__header">
+          <h2>All Meetings</h2>
+          <button mat-mini-fab color="primary" matTooltip="New meeting">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Search meetings..." [(ngModel)]="searchTerm"/>
+        </mat-form-field>
+
+        <mat-nav-list class="meeting-list">
+          <mat-card
+            *ngFor="let m of filteredMeetings"
+            class="meeting-card"
+            [class.meeting-card--active]="m.id === selectedMeetingId"
+            appearance="outlined"
+            (click)="selectMeeting(m.id)"
+          >
+            <div class="meeting-card__row">
+              <div class="meeting-card__title">{{ m.title }}</div>
+              <button mat-icon-button (click)="$event.stopPropagation()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </div>
+            <div class="meeting-card__row">
+              <div class="meeting-card__date">{{ m.date }}, {{ m.time.split(' - ')[0] }}</div>
+              <mat-chip [class]="statusClass(m.status)" disabled>{{ m.status }}</mat-chip>
+            </div>
+          </mat-card>
+        </mat-nav-list>
+
+        <mat-paginator
+          [length]="totalMeetings"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="[7]"
+          [hidePageSize]="true"
+          (page)="onPageChange($event)"
+        >
+        </mat-paginator>
+      </section>
+
+      <!-- Detail panel -->
+      <section class="detail-panel">
+        <div class="detail-header">
+          <div>
+            <h1>{{ selectedMeeting.title }}</h1>
+            <div class="detail-meta">
+              <span><mat-icon inline>event</mat-icon>
+                {{ selectedMeeting.date }}</span>
+              <span><mat-icon inline>schedule</mat-icon>
+                {{ selectedMeeting.time }}</span>
+              <mat-chip [class]="statusClass(selectedMeeting.status)" disabled>
+                {{ selectedMeeting.status }}
+              </mat-chip>
+            </div>
+            <p class="detail-description">{{ selectedMeeting.description }}</p>
+          </div>
+          <div class="detail-actions">
+            <button mat-stroked-button>
+              <mat-icon>edit</mat-icon>
+              Edit Meeting
+            </button>
+            <button mat-stroked-button>
+              <mat-icon>autorenew</mat-icon>
+              Reprocess with AI
+            </button>
+            <button mat-raised-button color="primary">
+              <mat-icon>add</mat-icon>
+              New Meeting
+            </button>
+          </div>
+        </div>
+
+        <mat-tab-group animationDuration="150ms" class="tabs">
+          <mat-tab label="Overview">
+            <div class="tab-content">
+              <!-- Stat cards -->
+              <div class="stat-grid">
+                <mat-card class="stat-card" appearance="outlined">
+                  <div class="stat-card__title">
+                    <mat-icon class="icon-purple">summarize</mat-icon>
+                    Summary
+                  </div>
+                  <p class="stat-card__text">{{ selectedMeeting.summary || 'Not generated yet.' }}</p>
+                  <a mat-button color="primary" class="stat-card__link">View full summary</a>
+                </mat-card>
+
+                <mat-card class="stat-card" appearance="outlined">
+                  <div class="stat-card__title">
+                    <mat-icon class="icon-green">task_alt</mat-icon>
+                    Action Items
+                  </div>
+                  <div class="stat-card__number">{{ selectedMeeting.actionItems.length }}</div>
+                  <div class="stat-card__split">
+                    <div><span class="split__value split__value--warn">{{ openActionItemsCount }}</span><br/>Open</div>
+                    <div><span class="split__value split__value--ok">{{ doneActionItemsCount }}</span><br/>Done</div>
+                  </div>
+                  <a mat-button color="primary" class="stat-card__link">View all action items</a>
+                </mat-card>
+
+                <mat-card class="stat-card" appearance="outlined">
+                  <div class="stat-card__title">
+                    <mat-icon class="icon-blue">group</mat-icon>
+                    Attendees
+                  </div>
+                  <div class="stat-card__number">{{ selectedMeeting.attendeesCount }}</div>
+                  <a mat-button color="primary" class="stat-card__link">View all attendees</a>
+                </mat-card>
+
+                <mat-card class="stat-card" appearance="outlined">
+                  <div class="stat-card__title">
+                    <mat-icon class="icon-violet">auto_awesome</mat-icon>
+                    AI Result
+                  </div>
+                  <p class="stat-card__text">Generated on<br/>{{ selectedMeeting.aiGeneratedOn }}</p>
+                  <p class="stat-card__text">Model: {{ selectedMeeting.aiModel }}</p>
+                  <a mat-button color="primary" class="stat-card__link">View details</a>
+                </mat-card>
+              </div>
+
+              <!-- Detail cards -->
+              <div class="detail-grid">
+                <mat-card class="detail-card" appearance="outlined">
+                  <div class="detail-card__title">
+                    <mat-icon class="icon-blue">list_alt</mat-icon>
+                    Key Discussion Points
+                  </div>
+                  <ul>
+                    <li *ngFor="let point of selectedMeeting.keyPoints">{{ point }}</li>
+                  </ul>
+                  <a mat-button color="primary" class="stat-card__link" *ngIf="selectedMeeting.keyPoints.length">View
+                    all notes</a>
+                </mat-card>
+
+                <mat-card class="detail-card" appearance="outlined">
+                  <div class="detail-card__title">
+                    <mat-icon class="icon-green">check_circle</mat-icon>
+                    Decisions Made
+                  </div>
+                  <ul>
+                    <li *ngFor="let d of selectedMeeting.decisions">{{ d }}</li>
+                  </ul>
+                  <a mat-button color="primary" class="stat-card__link" *ngIf="selectedMeeting.decisions.length">View
+                    all decisions</a>
+                </mat-card>
+
+                <mat-card class="detail-card" appearance="outlined">
+                  <div class="detail-card__title">
+                    <mat-icon class="icon-amber">sticky_note_2</mat-icon>
+                    Follow-up Notes
+                  </div>
+                  <ul>
+                    <li *ngFor="let n of selectedMeeting.followUpNotes">{{ n }}</li>
+                  </ul>
+                  <a mat-button color="primary" class="stat-card__link" *ngIf="selectedMeeting.followUpNotes.length">View
+                    all notes</a>
+                </mat-card>
+              </div>
+
+              <div class="bottom-grid">
+                <mat-card class="detail-card" appearance="outlined">
+                  <div class="detail-card__title">
+                    <mat-icon>description</mat-icon>
+                    Transcript Preview
+                  </div>
+                  <div class="transcript-box">
+                    <p *ngFor="let line of selectedMeeting.transcriptPreview">
+                      <strong>{{ line.speaker }}:</strong> {{ line.line }}
+                    </p>
+                    <p *ngIf="!selectedMeeting.transcriptPreview.length" class="empty">No transcript uploaded yet.</p>
+                  </div>
+                  <a mat-button color="primary" class="stat-card__link"
+                     *ngIf="selectedMeeting.transcriptPreview.length">View full transcript</a>
+                </mat-card>
+
+                <mat-card class="detail-card" appearance="outlined">
+                  <div class="detail-card__title">
+                    <mat-icon class="icon-blue">info</mat-icon>
+                    Meeting Info
+                  </div>
+                  <dl class="info-list">
+                    <dt>Created by</dt>
+                    <dd>{{ selectedMeeting.createdBy }}</dd>
+                    <dt>Created at</dt>
+                    <dd>{{ selectedMeeting.createdAt }}</dd>
+                    <dt>Last updated</dt>
+                    <dd>{{ selectedMeeting.updatedAt }}</dd>
+                    <dt>Processing status</dt>
+                    <dd>
+                      <mat-chip [class]="statusClass(selectedMeeting.status)" disabled>{{ selectedMeeting.status }}
+                      </mat-chip>
+                    </dd>
+                    <dt>Transcript</dt>
+                    <dd><a mat-button color="primary">View transcript</a></dd>
+                    <dt>AI Result</dt>
+                    <dd><a mat-button color="primary">View details</a></dd>
+                  </dl>
+                </mat-card>
+              </div>
+            </div>
+          </mat-tab>
+
+          <mat-tab label="Transcript">
+            <div class="tab-content placeholder">Continutul se conecteaza la GET /api/meetings/{{ '{' }}id{{ '}' }}
+              /transcript.
+            </div>
+          </mat-tab>
+          <mat-tab label="AI Results">
+            <div class="tab-content placeholder">Continutul se conecteaza la GET /api/meetings/{{ '{' }}id{{ '}' }}
+              /ai-results.
+            </div>
+          </mat-tab>
+          <mat-tab label="Action Items">
+            <div class="tab-content placeholder">Lista completa de ActionItemDTO pentru acest meeting.</div>
+          </mat-tab>
+          <mat-tab label="Attendees">
+            <div class="tab-content placeholder">Lista completa de AttendeeDTO pentru acest meeting.</div>
+          </mat-tab>
+          <mat-tab label="Activity">
+            <div class="tab-content placeholder">Istoric de evenimente (creat, actualizat, reprocesat).</div>
+          </mat-tab>
+        </mat-tab-group>
+      </section>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
