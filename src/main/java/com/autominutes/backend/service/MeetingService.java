@@ -10,7 +10,6 @@ import java.util.Optional;
 /**
  * Service for managing meetings (create, read, update, delete).
  * <p>
- * Covers requirement 3.1 of the backend specification (Meeting Management).
  */
 public interface MeetingService {
 
