@@ -31,7 +31,7 @@ public class Meeting {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "processing_status", nullable = false)
-  private ProcessingStatus processingStatus;
+  private ProcessingStatus processingStatus = ProcessingStatus.PENDING;
 
   @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<MeetingAttendee> meetingAttendees = new ArrayList<>();

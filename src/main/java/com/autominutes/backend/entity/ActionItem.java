@@ -24,6 +24,7 @@ public class ActionItem {
 
   private LocalDate deadline;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private ActionItemStatus status;
 
