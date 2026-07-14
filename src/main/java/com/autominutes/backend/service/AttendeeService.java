@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * Service for managing attendees associated with a meeting.
  * <p>
- * Covers requirement 3.2 of the backend specification (Attendee Management).
  * The meeting-attendee relationship is many-to-many: the same attendee (uniquely
  * identified by email) can be associated with multiple meetings, through the
  * {@code meeting_attendee} junction table.

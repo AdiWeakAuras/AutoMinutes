@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import com.autominutes.backend.llm.LlmCommunicationException;
+import com.autominutes.backend.exception.InvalidRequestException;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class GlobalExceptionHandler {
             LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 
-    // 404 - meeting/entitate not found (ex: DELETE/GET/PUT on an id that doesn't exist)
+    // 404 - meeting/entity not found (ex: DELETE/GET/PUT on an id that doesn't exist)
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, WebRequest request) {
         ErrorResponse error = new ErrorResponse(
@@ -121,6 +122,17 @@ public class GlobalExceptionHandler {
                 extractPath(request)
         );
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(error);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRequest(InvalidRequestException ex, WebRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                ex.getMessage(),
+                extractPath(request)
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     private String extractPath(WebRequest request) {

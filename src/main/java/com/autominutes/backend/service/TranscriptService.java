@@ -7,7 +7,6 @@ import com.autominutes.backend.dto.TranscriptUpdateRequest;
 /**
  * Service for managing a meeting's transcript.
  * <p>
- * Covers requirement 3.3 of the backend specification (Transcript Storage).
  * The meeting-transcript relationship is one-to-one: a meeting can have at most one transcript.
  */
 public interface TranscriptService {
