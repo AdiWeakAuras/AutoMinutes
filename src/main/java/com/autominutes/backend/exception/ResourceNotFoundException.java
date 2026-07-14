@@ -15,5 +15,8 @@ public class ResourceNotFoundException extends RuntimeException {
     public static ResourceNotFoundException forTranscript(Long id) {
         return new ResourceNotFoundException("Meeting with id" + id + " has no transcript.");
     }
+    public static ResourceNotFoundException forPromptTemplate(Long id) {
+        return new ResourceNotFoundException("Prompt template with id " + id + " was not found.");
+    }
 
 }

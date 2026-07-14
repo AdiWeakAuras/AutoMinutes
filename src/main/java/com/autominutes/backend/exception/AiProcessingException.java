@@ -26,4 +26,8 @@ public class AiProcessingException extends RuntimeException {
         return new AiProcessingException(
                 "The AI model returned a deadline that is not a valid date: '" + deadline + "'");
     }
+
+    public static AiProcessingException missingActionItemDescription() {
+        return new AiProcessingException("The AI model returned an action item without a description");
+    }
 }
