@@ -50,6 +50,37 @@ jobs:
       - name: Upload Coverage Report
         if: always()
         uses: actions/upload-artifact@v4
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./auto-minutes-frontend
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          name: coverage-report
-          path: build/reports/jacoco/test/html/
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: './auto-minutes-frontend/package-lock.json'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Angular App
+        run: npm run build
+
+      - name: Run Vitest Suite
+        run: npm test -- --watch=false
+
+      - name: Upload Production Web Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: autominutes-frontend-build
+          path: auto-minutes-frontend/dist/
+          retention-days: 7
+
