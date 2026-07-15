@@ -28,6 +28,8 @@ jobs:
         run: ./gradlew assemble
 
       - name: Run Test Suite
+        env:
+          SPRING_PROFILES_ACTIVE: h2
         run: ./gradlew test
 
       - name: Generate Coverage Report (JaCoCo)
@@ -39,6 +41,7 @@ jobs:
           name: autominutes-backend-jar
           path: build/libs/*.jar
           retention-days: 7
+          if-no-files-found: ignore
 
       - name: Upload Test Reports
         if: always()
@@ -46,10 +49,15 @@ jobs:
         with:
           name: test-reports
           path: build/reports/tests/
+          if-no-files-found: ignore
 
       - name: Upload Coverage Report
         if: always()
         uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: build/reports/jacoco/test/html/
+          if-no-files-found: ignore
 
   frontend:
     runs-on: ubuntu-latest
@@ -83,4 +91,4 @@ jobs:
           name: autominutes-frontend-build
           path: auto-minutes-frontend/dist/
           retention-days: 7
-
+          if-no-files-found: ignore
