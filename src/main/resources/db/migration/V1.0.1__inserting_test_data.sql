@@ -18,7 +18,19 @@ INSERT INTO prompt_template
  template_text,
  description)
 VALUES ('default_summary',
-        'Summarize the following meeting transcript: {transcript}',
+        'Analyze the following meeting transcript and extract structured information.
+
+Guidelines:
+- summary: one concise sentence giving the overall gist of the meeting
+- detailed_summary: a short paragraph covering the main discussion points, in the order they came up
+- decisions: concrete decisions the group agreed on during the meeting. Use an empty string if none were made
+- follow_up_notes: anything explicitly deferred, scheduled, or flagged for a future meeting or check-in. Use an empty string if none
+- action_items: concrete tasks that were assigned or clearly implied, including assignee and deadline if mentioned in the transcript
+
+Do not invent information that is not present or reasonably implied in the transcript.
+
+Transcript:
+{transcript}',
         'Default prompt for summarization');
 
 -- ==========================================================
