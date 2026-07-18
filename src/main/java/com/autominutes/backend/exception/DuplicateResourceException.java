@@ -8,7 +8,7 @@ public class DuplicateResourceException extends RuntimeException {
 
     public static DuplicateResourceException forAttendeeAlreadyInMeeting(String email, Long meetingId) {
         return new DuplicateResourceException(
-                "Attendee with email-ul " + email + " is already linked to the meeting with id " + meetingId);
+                "Attendee with email " + email + " is already linked to the meeting with id " + meetingId);
     }
 
     public static DuplicateResourceException forTranscript(Long meetingId) {
