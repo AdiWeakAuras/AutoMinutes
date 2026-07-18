@@ -1,4 +1,4 @@
-package com.autominutes.backend.service;
+package com.autominutes.backend.service.impl;
 
 import com.autominutes.backend.dto.AttendeeCreateRequest;
 import com.autominutes.backend.dto.AttendeeDTO;
@@ -12,7 +12,6 @@ import com.autominutes.backend.mapper.AttendeeMapper;
 import com.autominutes.backend.repository.AttendeeRepository;
 import com.autominutes.backend.repository.MeetingAttendeeRepository;
 import com.autominutes.backend.repository.MeetingRepository;
-import com.autominutes.backend.service.impl.AttendeeServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,4 +1,4 @@
-package com.autominutes.backend.service;
+package com.autominutes.backend.service.impl;
 
 import com.autominutes.backend.dto.AIResultDTO;
 import com.autominutes.backend.dto.ProcessMeetingRequest;
@@ -18,8 +18,6 @@ import com.autominutes.backend.mapper.AIResultMapper;
 import com.autominutes.backend.repository.AIResultRepository;
 import com.autominutes.backend.repository.MeetingRepository;
 import com.autominutes.backend.repository.PromptTemplateRepository;
-import com.autominutes.backend.service.impl.AiProcessingServiceImpl;
-import com.autominutes.backend.service.impl.MeetingStatusUpdater;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
