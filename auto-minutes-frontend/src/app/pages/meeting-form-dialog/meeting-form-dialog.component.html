@@ -1,0 +1,67 @@
+<div mat-dialog-title class="dialog-title">
+  <div class="dialog-title__icon" [class.dialog-title__icon--edit]="isEdit">
+    <mat-icon>{{ isEdit ? 'edit_calendar' : 'event_note' }}</mat-icon>
+  </div>
+  <div class="dialog-title__text">
+    <span class="dialog-title__main">{{ isEdit ? 'Edit Meeting' : 'New Meeting' }}</span>
+    <span class="dialog-title__sub">
+      {{ isEdit ? 'Update the details below' : 'Fill in the details to create a new meeting' }}
+    </span>
+  </div>
+</div>
+
+<mat-dialog-content>
+  <div class="form-content">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title *</mat-label>
+      <mat-icon matPrefix>title</mat-icon>
+      <input
+        matInput
+        [(ngModel)]="title"
+        name="title"
+        maxlength="200"
+        placeholder="Ex: Q3 Sprint Planning"
+        autocomplete="off"
+      />
+      <mat-hint align="end">{{ title.length }}/200</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <mat-icon matPrefix>notes</mat-icon>
+      <textarea
+        matInput
+        [(ngModel)]="description"
+        name="description"
+        rows="3"
+        placeholder="Optional — add context about this meeting"
+      ></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date &amp; Time *</mat-label>
+      <mat-icon matPrefix>schedule</mat-icon>
+      <input
+        matInput
+        type="datetime-local"
+        [(ngModel)]="meetingDateLocal"
+        name="meetingDate"
+      />
+    </mat-form-field>
+
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!isValid"
+    (click)="submit()"
+  >
+    <mat-icon>{{ isEdit ? 'save' : 'add_circle_outline' }}</mat-icon>
+    {{ isEdit ? 'Save changes' : 'Create Meeting' }}
+  </button>
+</mat-dialog-actions>
