@@ -1,5 +1,5 @@
 package com.autominutes.backend.dto;
 
-public record ProcessMeetingRequest(
+public record ProcessMeetingRequestDTO(
         Long promptTemplateId
 ) {}

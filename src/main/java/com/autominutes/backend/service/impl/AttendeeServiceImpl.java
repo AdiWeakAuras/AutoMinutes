@@ -1,8 +1,8 @@
 package com.autominutes.backend.service.impl;
 
-import com.autominutes.backend.dto.AttendeeCreateRequest;
+import com.autominutes.backend.dto.AttendeeCreateRequestDTO;
 import com.autominutes.backend.dto.AttendeeDTO;
-import com.autominutes.backend.dto.AttendeeUpdateRequest;
+import com.autominutes.backend.dto.AttendeeUpdateRequestDTO;
 import com.autominutes.backend.entity.Attendee;
 import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.entity.MeetingAttendee;
@@ -57,7 +57,7 @@ public class AttendeeServiceImpl implements AttendeeService {
 
     @Override
     @Transactional
-    public AttendeeDTO addAttendeeToMeeting(Long meetingId, AttendeeCreateRequest request) {
+    public AttendeeDTO addAttendeeToMeeting(Long meetingId, AttendeeCreateRequestDTO request) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
 
@@ -84,7 +84,7 @@ public class AttendeeServiceImpl implements AttendeeService {
 
     @Override
     @Transactional
-    public AttendeeDTO updateAttendee(Long meetingId, Long attendeeId, AttendeeUpdateRequest request) {
+    public AttendeeDTO updateAttendee(Long meetingId, Long attendeeId, AttendeeUpdateRequestDTO request) {
         MeetingAttendee link = meetingAttendeeRepository.findByMeetingIdAndAttendeeId(meetingId, attendeeId)
                 .orElseThrow(() -> ResourceNotFoundException.forAttendee(attendeeId));
 

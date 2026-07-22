@@ -1,9 +1,9 @@
 package com.autominutes.backend.service.impl;
 
-import com.autominutes.backend.dto.MeetingCreateRequest;
+import com.autominutes.backend.dto.MeetingCreateRequestDTO;
 import com.autominutes.backend.dto.MeetingDTO;
 import com.autominutes.backend.dto.MeetingSummaryDTO;
-import com.autominutes.backend.dto.MeetingUpdateRequest;
+import com.autominutes.backend.dto.MeetingUpdateRequestDTO;
 import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.exception.ResourceNotFoundException;
 import com.autominutes.backend.mapper.MeetingMapper;
@@ -40,7 +40,7 @@ public class MeetingServiceImpl implements MeetingService {
 
   @Override
   @Transactional
-  public MeetingDTO createMeeting(MeetingCreateRequest request) {
+  public MeetingDTO createMeeting(MeetingCreateRequestDTO request) {
     Meeting meeting = meetingMapper.toEntity(request);
     Meeting saved = meetingRepository.save(meeting);
     return meetingMapper.toDto(saved);
@@ -48,7 +48,7 @@ public class MeetingServiceImpl implements MeetingService {
 
   @Override
   @Transactional
-  public MeetingDTO updateMeeting(Long id, MeetingUpdateRequest request) {
+  public MeetingDTO updateMeeting(Long id, MeetingUpdateRequestDTO request) {
     Meeting meeting =
         meetingRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.forMeeting(id));
 

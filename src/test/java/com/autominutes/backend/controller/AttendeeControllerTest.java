@@ -1,8 +1,8 @@
 package com.autominutes.backend.controller;
 
-import com.autominutes.backend.dto.AttendeeCreateRequest;
+import com.autominutes.backend.dto.AttendeeCreateRequestDTO;
 import com.autominutes.backend.dto.AttendeeDTO;
-import com.autominutes.backend.dto.AttendeeUpdateRequest;
+import com.autominutes.backend.dto.AttendeeUpdateRequestDTO;
 import com.autominutes.backend.exception.DuplicateResourceException;
 import com.autominutes.backend.exception.ResourceNotFoundException;
 import com.autominutes.backend.service.AttendeeService;
@@ -64,9 +64,9 @@ class AttendeeControllerTest {
 
     @Test
     void addAttendee_returns201WhenValid() throws Exception {
-        AttendeeCreateRequest request = new AttendeeCreateRequest("Maria", "maria@example.com", "STAKEHOLDER");
+        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("Maria", "maria@example.com", "STAKEHOLDER");
         AttendeeDTO dto = new AttendeeDTO(3L, "Maria", "maria@example.com", "STAKEHOLDER");
-        when(attendeeService.addAttendeeToMeeting(eq(1L), any(AttendeeCreateRequest.class))).thenReturn(dto);
+        when(attendeeService.addAttendeeToMeeting(eq(1L), any(AttendeeCreateRequestDTO.class))).thenReturn(dto);
 
         mockMvc.perform(post("/api/meetings/1/attendees")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -77,7 +77,7 @@ class AttendeeControllerTest {
 
     @Test
     void addAttendee_returns400WhenEmailInvalid() throws Exception {
-        AttendeeCreateRequest request = new AttendeeCreateRequest("Maria", "not-an-email", "STAKEHOLDER");
+        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("Maria", "not-an-email", "STAKEHOLDER");
 
         mockMvc.perform(post("/api/meetings/1/attendees")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -87,7 +87,7 @@ class AttendeeControllerTest {
 
     @Test
     void addAttendee_returns400WhenNameBlank() throws Exception {
-        AttendeeCreateRequest request = new AttendeeCreateRequest("", "maria@example.com", "STAKEHOLDER");
+        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("", "maria@example.com", "STAKEHOLDER");
 
         mockMvc.perform(post("/api/meetings/1/attendees")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -97,8 +97,8 @@ class AttendeeControllerTest {
 
     @Test
     void addAttendee_returns409WhenAlreadyLinked() throws Exception {
-        AttendeeCreateRequest request = new AttendeeCreateRequest("Ana", "ana@example.com", "PM");
-        when(attendeeService.addAttendeeToMeeting(eq(1L), any(AttendeeCreateRequest.class)))
+        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("Ana", "ana@example.com", "PM");
+        when(attendeeService.addAttendeeToMeeting(eq(1L), any(AttendeeCreateRequestDTO.class)))
                 .thenThrow(DuplicateResourceException.forAttendeeAlreadyInMeeting("ana@example.com", 1L));
 
         mockMvc.perform(post("/api/meetings/1/attendees")
@@ -109,9 +109,9 @@ class AttendeeControllerTest {
 
     @Test
     void updateAttendee_returns200() throws Exception {
-        AttendeeUpdateRequest request = new AttendeeUpdateRequest("New name", null, null);
+        AttendeeUpdateRequestDTO request = new AttendeeUpdateRequestDTO("New name", null, null);
         AttendeeDTO dto = new AttendeeDTO(2L, "New name", "radu@example.com", "DEV");
-        when(attendeeService.updateAttendee(eq(1L), eq(2L), any(AttendeeUpdateRequest.class))).thenReturn(dto);
+        when(attendeeService.updateAttendee(eq(1L), eq(2L), any(AttendeeUpdateRequestDTO.class))).thenReturn(dto);
 
         mockMvc.perform(patch("/api/meetings/1/attendees/2")
                         .contentType(MediaType.APPLICATION_JSON)

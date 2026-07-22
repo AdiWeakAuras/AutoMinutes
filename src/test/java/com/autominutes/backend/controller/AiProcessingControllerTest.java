@@ -2,7 +2,7 @@ package com.autominutes.backend.controller;
 
 import com.autominutes.backend.dto.AIResultDTO;
 import com.autominutes.backend.dto.ActionItemDTO;
-import com.autominutes.backend.dto.ProcessMeetingRequest;
+import com.autominutes.backend.dto.ProcessMeetingRequestDTO;
 import com.autominutes.backend.entity.ActionItemStatus;
 import com.autominutes.backend.exception.AiProcessingException;
 import com.autominutes.backend.exception.InvalidRequestException;
@@ -37,10 +37,10 @@ class AiProcessingControllerTest {
 
     @Test
     void processTranscript_returns201WithBody() throws Exception {
-        ProcessMeetingRequest request = new ProcessMeetingRequest(2L);
+        ProcessMeetingRequestDTO request = new ProcessMeetingRequestDTO(2L);
         AIResultDTO dto = new AIResultDTO(1L, "summary", "detailed", "decisions", "notes",
                 List.of(new ActionItemDTO(1L, "Do the thing", "Ana", null, ActionItemStatus.OPEN)));
-        when(aiProcessingService.processTranscript(eq(1L), any(ProcessMeetingRequest.class))).thenReturn(dto);
+        when(aiProcessingService.processTranscript(eq(1L), any(ProcessMeetingRequestDTO.class))).thenReturn(dto);
 
         mockMvc.perform(post("/api/meetings/1/process")
                         .contentType(MediaType.APPLICATION_JSON)
