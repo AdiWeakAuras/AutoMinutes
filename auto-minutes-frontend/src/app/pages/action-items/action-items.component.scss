@@ -1,0 +1,139 @@
+// Stilurile globale (status-chip, state-box, empty-state, page, search-field)
+// sunt in src/styles.scss — nu se repeta aici.
+
+:host {
+  display: block;
+}
+
+// ─── Toolbar ─────────────────────────────────────────────────
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  border-radius: 8px !important;
+  overflow: hidden;
+
+  ::ng-deep .mat-button-toggle {
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  ::ng-deep .mat-button-toggle-checked {
+    background: #ede9fe;
+    color: #7c3aed;
+    font-weight: 600;
+  }
+}
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 10px;
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 0 5px;
+  margin-left: 6px;
+}
+
+.filter-count--open {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.filter-count--progress {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.filter-count--done {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.filter-count--unknown {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.search-field {
+  width: 280px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+// ─── Table ───────────────────────────────────────────────────
+
+.table-card {
+  padding: 0 !important;
+}
+
+.items-table {
+  width: 100%;
+}
+
+.item-desc {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.item-meeting {
+  font-size: 12.5px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+// Assignee cu avatar
+.assignee-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #374151;
+}
+
+.assignee-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ede9fe;
+  color: #7c3aed;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+// Deadline
+.deadline-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  color: #374151;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.cell-empty {
+  color: #d1d5db;
+  font-size: 13px;
+}

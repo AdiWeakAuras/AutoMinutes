@@ -1,0 +1,122 @@
+<div class="page">
+  <div class="page__header">
+    <div>
+      <h1>Action Items</h1>
+      <p class="page__subtitle">All action items extracted from your meetings, across every processed transcript.</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="state-box">
+      <mat-spinner diameter="28"></mat-spinner>
+      <span>Loading action items...</span>
+    </div>
+  }
+
+  @if (error) {
+    <div class="state-box state-box--error">
+      <mat-icon>error_outline</mat-icon>
+      {{ error }}
+      <button mat-stroked-button (click)="load()">
+        <mat-icon>refresh</mat-icon>
+        Reincearca
+      </button>
+    </div>
+  }
+
+  @if (!loading && !error) {
+    <div class="toolbar">
+      <mat-button-toggle-group [(ngModel)]="statusFilter" class="filter-group">
+        <mat-button-toggle value="ALL">
+          All
+          <span class="filter-count">{{ countFor('ALL') }}</span>
+        </mat-button-toggle>
+        <mat-button-toggle value="OPEN">
+          Open
+          <span class="filter-count filter-count--open">{{ countFor('OPEN') }}</span>
+        </mat-button-toggle>
+        <mat-button-toggle value="IN_PROGRESS">
+          In Progress
+          <span class="filter-count filter-count--progress">{{ countFor('IN_PROGRESS') }}</span>
+        </mat-button-toggle>
+        <mat-button-toggle value="DONE">
+          Done
+          <span class="filter-count filter-count--done">{{ countFor('DONE') }}</span>
+        </mat-button-toggle>
+        <mat-button-toggle value="UNKNOWN">
+          Unknown
+          <span class="filter-count filter-count--unknown">{{ countFor('UNKNOWN') }}</span>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Search action items..." [(ngModel)]="searchTerm"/>
+      </mat-form-field>
+    </div>
+
+    @if (filteredItems.length) {
+      <mat-card class="table-card" appearance="outlined">
+        <table mat-table [dataSource]="filteredItems" class="items-table">
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="item-desc">{{ item.description }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="meeting">
+            <th mat-header-cell *matHeaderCellDef>Meeting</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="item-meeting">{{ item.meetingTitle }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="assignee">
+            <th mat-header-cell *matHeaderCellDef>Assignee</th>
+            <td mat-cell *matCellDef="let item">
+              @if (item.proposedAssignee) {
+                <div class="assignee-cell">
+                  <div class="assignee-avatar">
+                    {{ item.proposedAssignee[0].toUpperCase() }}
+                  </div>
+                  {{ item.proposedAssignee }}
+                </div>
+              } @else {
+                <span class="cell-empty">—</span>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="deadline">
+            <th mat-header-cell *matHeaderCellDef>Deadline</th>
+            <td mat-cell *matCellDef="let item">
+              @if (item.deadline) {
+                <span class="deadline-badge">{{ item.deadline }}</span>
+              } @else {
+                <span class="cell-empty">—</span>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let item">
+              <mat-chip [class]="statusClass(item.status)" disabled>
+                {{ item.status }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </mat-card>
+    } @else {
+      <div class="empty-state">
+        <mat-icon>checklist</mat-icon>
+        <p>No action items match the current filter.</p>
+      </div>
+    }
+  }
+</div>

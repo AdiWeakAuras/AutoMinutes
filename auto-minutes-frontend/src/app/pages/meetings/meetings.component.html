@@ -1,0 +1,461 @@
+<div class="page">
+
+  <!-- ─── Left panel ────────────────────────────────────────── -->
+  <section class="list-panel">
+    <div class="list-panel__header">
+      <h2>Meetings</h2>
+      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon>
+        New
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search meetings..." [(ngModel)]="searchTerm"/>
+    </mat-form-field>
+
+    @if (loadingList) {
+      <div class="state-box">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+    }
+
+    @if (listError) {
+      <div class="state-box state-box--error">
+        <mat-icon>error_outline</mat-icon>
+        {{ listError }}
+        <button mat-button (click)="loadMeetings()">Reincearca</button>
+      </div>
+    }
+
+    @if (!loadingList && !listError) {
+      <div class="meeting-list">
+        @for (m of filteredMeetings; track m.id) {
+          <div
+            class="meeting-card"
+            [class.meeting-card--active]="selectedMeeting?.id === m.id"
+            (click)="selectMeeting(m.id)"
+          >
+            <div class="meeting-card__status-dot"
+                 [class.dot--done]="m.processingStatus === 'DONE'"
+                 [class.dot--pending]="m.processingStatus === 'PENDING'"
+                 [class.dot--processing]="m.processingStatus === 'PROCESSING'"
+                 [class.dot--failed]="m.processingStatus === 'FAILED'">
+            </div>
+            <div class="meeting-card__body">
+              <div class="meeting-card__title">{{ m.title }}</div>
+              <div class="meeting-card__meta">
+                {{ formatDate(m.meetingDate) }}
+                @if (m.attendeeCount > 0) {
+                  <span>· {{ m.attendeeCount }} attendees</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (!meetings.length) {
+          <div class="empty-list">
+            <mat-icon>event_note</mat-icon>
+            <p>No meetings yet.</p>
+            <button mat-stroked-button (click)="openCreateDialog()">
+              Create first meeting
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <mat-paginator
+      [length]="meetings.length"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 7, 10]"
+      (page)="onPageChange($event)"
+    ></mat-paginator>
+  </section>
+
+  <!-- ─── Right panel ───────────────────────────────────────── -->
+  <section class="detail-panel">
+
+    @if (!selectedMeeting && !loadingDetail) {
+      <div class="detail-empty">
+        <mat-icon>event_note</mat-icon>
+        <h3>Select a meeting</h3>
+        <p>Choose a meeting from the list to view details, transcript and AI results.</p>
+      </div>
+    }
+
+    @if (loadingDetail) {
+      <div class="state-box" style="height:100%">
+        <mat-spinner diameter="36"></mat-spinner>
+      </div>
+    }
+
+    @if (detailError) {
+      <div class="state-box state-box--error">
+        <mat-icon>error_outline</mat-icon>
+        {{ detailError }}
+      </div>
+    }
+
+    @if (selectedMeeting && !loadingDetail && !detailError) {
+
+      <!-- Detail header -->
+      <div class="detail-header">
+        <div class="detail-header__left">
+          <div class="detail-header__title-row">
+            <h1>{{ selectedMeeting.title }}</h1>
+            <mat-chip [class]="statusClass(selectedMeeting.processingStatus)" disabled>
+              {{ selectedMeeting.processingStatus }}
+            </mat-chip>
+          </div>
+          <div class="detail-meta">
+            <mat-icon>schedule</mat-icon>
+            {{ formatDate(selectedMeeting.meetingDate) }}
+            @if (selectedMeeting.attendees.length) {
+              <span class="meta-sep">·</span>
+              <mat-icon>group</mat-icon>
+              {{ selectedMeeting.attendees.length }} attendee{{ selectedMeeting.attendees.length !== 1 ? 's' : '' }}
+            }
+          </div>
+          @if (selectedMeeting.description) {
+            <p class="detail-description">{{ selectedMeeting.description }}</p>
+          }
+        </div>
+
+        <div class="detail-actions">
+          <!-- Buton secundar: Edit -->
+          <button mat-stroked-button (click)="openEditDialog()">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+
+          <!-- Buton secundar: Delete -->
+          <button mat-icon-button
+                  color="warn"
+                  (click)="confirmDeleteMeeting()"
+                  [disabled]="deleting"
+                  matTooltip="Delete meeting">
+            @if (deleting) {
+              <mat-spinner diameter="18"></mat-spinner>
+            } @else {
+              <mat-icon>delete_outline</mat-icon>
+            }
+          </button>
+
+          <!-- Buton primar: Process / Reprocess -->
+          @if (!hasTranscript) {
+            <button mat-raised-button color="primary"
+                    (click)="openTranscriptDialog()"
+                    matTooltip="Submit a transcript to enable AI processing">
+              <mat-icon>upload_file</mat-icon>
+              Submit Transcript
+            </button>
+          } @else if (!hasBeenProcessed) {
+            <button mat-raised-button color="primary"
+                    [disabled]="reprocessing"
+                    (click)="reprocessMeeting()">
+              <mat-spinner diameter="16"
+                           [style.display]="reprocessing ? 'inline-block' : 'none'"
+                           style="margin-right:6px; vertical-align:middle;">
+              </mat-spinner>
+              <mat-icon [style.display]="reprocessing ? 'none' : 'inline'">auto_awesome</mat-icon>
+              {{ reprocessing ? 'Se proceseaza...' : 'Process with AI' }}
+            </button>
+          } @else {
+            <button mat-stroked-button
+                    [disabled]="reprocessing"
+                    (click)="reprocessMeeting()">
+              <mat-spinner diameter="16"
+                           [style.display]="reprocessing ? 'inline-block' : 'none'"
+                           style="margin-right:6px; vertical-align:middle;">
+              </mat-spinner>
+              <mat-icon [style.display]="reprocessing ? 'none' : 'inline'">autorenew</mat-icon>
+              {{ reprocessing ? 'Se proceseaza...' : 'Reprocess with AI' }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Erori inline -->
+      @if (reprocessError) {
+        <div class="inline-error">
+          <mat-icon>error_outline</mat-icon>
+          {{ reprocessError }}
+        </div>
+      }
+      @if (formError) {
+        <div class="inline-error">
+          <mat-icon>error_outline</mat-icon>
+          {{ formError }}
+        </div>
+      }
+
+      <!-- Tabs -->
+      <mat-tab-group animationDuration="150ms" class="tabs">
+
+        <!-- Overview -->
+        <mat-tab label="Overview">
+          <div class="tab-content">
+            @if (latestAiResult) {
+              <div class="ai-cards">
+                <mat-card class="ai-card" appearance="outlined">
+                  <div class="ai-card__header">
+                    <div class="ai-card__icon ai-card__icon--purple">
+                      <mat-icon>summarize</mat-icon>
+                    </div>
+                    <span class="ai-card__label">Summary</span>
+                  </div>
+                  <p class="ai-card__text">{{ latestAiResult.summary || '—' }}</p>
+                </mat-card>
+                <mat-card class="ai-card" appearance="outlined">
+                  <div class="ai-card__header">
+                    <div class="ai-card__icon ai-card__icon--green">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <span class="ai-card__label">Decisions</span>
+                  </div>
+                  <p class="ai-card__text">{{ latestAiResult.decisions || '—' }}</p>
+                </mat-card>
+                <mat-card class="ai-card" appearance="outlined">
+                  <div class="ai-card__header">
+                    <div class="ai-card__icon ai-card__icon--amber">
+                      <mat-icon>sticky_note_2</mat-icon>
+                    </div>
+                    <span class="ai-card__label">Follow-up Notes</span>
+                  </div>
+                  <p class="ai-card__text">{{ latestAiResult.followUpNotes || '—' }}</p>
+                </mat-card>
+              </div>
+            } @else {
+              <div class="no-ai-banner">
+                <div class="no-ai-banner__icon">
+                  <mat-icon>auto_awesome</mat-icon>
+                </div>
+                <div>
+                  <div class="no-ai-banner__title">No AI results yet</div>
+                  <div class="no-ai-banner__sub">
+                    {{
+                      selectedMeeting.transcript
+                        ? 'Click "Process with AI" to generate summary, decisions and action items.'
+                        : 'Submit a transcript first, then process it with AI.'
+                    }}
+                  </div>
+                </div>
+                @if (!selectedMeeting.transcript) {
+                  <button mat-raised-button color="primary" (click)="openTranscriptDialog()">
+                    <mat-icon>upload_file</mat-icon>
+                    Submit Transcript
+                  </button>
+                }
+              </div>
+            }
+
+            <div class="bottom-grid">
+              <!-- Transcript card -->
+              <mat-card class="detail-card" appearance="outlined">
+                <div class="detail-card__title">
+                  <mat-icon>description</mat-icon>
+                  Transcript
+                  <button
+                    mat-icon-button
+                    class="card-action-btn"
+                    [matTooltip]="selectedMeeting.transcript ? 'Edit Transcript' : 'Submit Transcript'"
+                    (click)="openTranscriptDialog()"
+                  >
+                    <mat-icon>{{ selectedMeeting.transcript ? 'edit' : 'upload_file' }}</mat-icon>
+                  </button>
+                </div>
+                @if (selectedMeeting.transcript) {
+                  <div class="transcript-box">
+                    <p style="white-space: pre-wrap">{{ selectedMeeting.transcript.content }}</p>
+                  </div>
+                } @else {
+                  <div class="card-empty">
+                    <mat-icon>upload_file</mat-icon>
+                    <p>No transcript yet.</p>
+                    <button mat-stroked-button (click)="openTranscriptDialog()">
+                      Submit Transcript
+                    </button>
+                  </div>
+                }
+              </mat-card>
+
+              <!-- Attendees card -->
+              <mat-card class="detail-card" appearance="outlined">
+                <div class="detail-card__title">
+                  <mat-icon class="icon-blue">group</mat-icon>
+                  Attendees
+                  @if (selectedMeeting.attendees.length) {
+                    <span class="attendees-count">{{ selectedMeeting.attendees.length }}</span>
+                  }
+                  <button
+                    mat-icon-button
+                    class="card-action-btn"
+                    matTooltip="Add Attendee"
+                    (click)="openAddAttendeeDialog()"
+                  >
+                    <mat-icon>person_add</mat-icon>
+                  </button>
+                </div>
+
+                @if (selectedMeeting.attendees.length) {
+                  <div class="attendee-list">
+                    @for (a of selectedMeeting.attendees; track a.id) {
+                      <div class="attendee-row">
+                        <div class="attendee-avatar">{{ a.name[0].toUpperCase() }}</div>
+                        <div class="attendee-info">
+                          <div class="attendee-name">{{ a.name }}</div>
+                          @if (a.role) {
+                            <div class="attendee-role">{{ a.role }}</div>
+                          }
+                        </div>
+                        <div class="attendee-actions">
+                          <button mat-icon-button
+                                  class="attendee-btn"
+                                  matTooltip="Edit"
+                                  (click)="openEditAttendeeDialog(a)">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <button mat-icon-button
+                                  class="attendee-btn attendee-btn--remove"
+                                  matTooltip="Remove"
+                                  (click)="removeAttendee(a.id)">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="card-empty">
+                    <mat-icon>group_off</mat-icon>
+                    <p>No attendees added.</p>
+                    <button mat-stroked-button (click)="openAddAttendeeDialog()">
+                      Add Attendee
+                    </button>
+                  </div>
+                }
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Detailed Summary -->
+        <mat-tab label="Detailed Summary">
+          <div class="tab-content">
+            @if (latestAiResult?.detailedSummary) {
+              <mat-card class="detail-card detail-card--full" appearance="outlined">
+                <div class="detail-card__title">
+                  <mat-icon class="icon-purple">article</mat-icon>
+                  Detailed Summary
+                </div>
+                <p class="detailed-summary-text">{{ latestAiResult!.detailedSummary }}</p>
+              </mat-card>
+            } @else {
+              <div class="state-box">
+                {{ latestAiResult ? 'No detailed summary generated.' : 'No AI results yet.' }}
+              </div>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- Action Items -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            Action Items
+            @if (latestAiResult?.actionItems?.length) {
+              <span class="tab-badge">{{ latestAiResult!.actionItems.length }}</span>
+            }
+          </ng-template>
+          <div class="tab-content">
+            @if (latestAiResult?.actionItems?.length) {
+              @for (item of latestAiResult!.actionItems; track item.id) {
+                <div class="action-item-row">
+                  <div class="action-item-row__left">
+                    <div class="action-item-row__desc">{{ item.description }}</div>
+                    <div class="action-item-row__meta">
+                      @if (item.proposedAssignee) {
+                        <div class="assignee-mini">
+                          <div class="assignee-dot">{{ item.proposedAssignee[0].toUpperCase() }}</div>
+                          {{ item.proposedAssignee }}
+                        </div>
+                      } @else {
+                        <span class="meta-empty">Unassigned</span>
+                      }
+                      @if (item.deadline) {
+                        <span class="meta-sep">·</span>
+                        <mat-icon>event</mat-icon>
+                        {{ item.deadline }}
+                      }
+                    </div>
+                  </div>
+                  <mat-card class="detail-card" appearance="outlined">
+                    <div class="detail-card__title">
+                      <mat-icon class="icon-blue">group</mat-icon>
+                      Attendees
+                      <button
+                        mat-icon-button
+                        class="card-action-btn"
+                        matTooltip="Add Attendee"
+                        (click)="openAddAttendeeDialog()"
+                      >
+                        <mat-icon>person_add</mat-icon>
+                      </button>
+                    </div>
+
+                    @if (selectedMeeting.attendees.length) {
+                      <div class="attendee-list">
+                        @for (a of selectedMeeting.attendees; track a.id) {
+                          <div class="attendee-row">
+                            <div class="attendee-row__avatar">
+                              {{ a.name[0].toUpperCase() }}
+                            </div>
+                            <div class="attendee-row__info">
+                              <div class="attendee-row__name">{{ a.name }}</div>
+                              <div class="attendee-row__meta">
+                                {{ a.email }}
+                                @if (a.role) {
+                                  <span>· {{ a.role }}</span>
+                                }
+                              </div>
+                            </div>
+                            <div class="attendee-row__actions">
+                              <button mat-icon-button
+                                      matTooltip="Edit"
+                                      (click)="openEditAttendeeDialog(a)">
+                                <mat-icon>edit</mat-icon>
+                              </button>
+                              <button mat-icon-button
+                                      matTooltip="Remove"
+                                      (click)="removeAttendee(a.id)">
+                                <mat-icon>person_remove</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <div class="card-empty">
+                        <mat-icon>group_off</mat-icon>
+                        <p>No attendees added.</p>
+                        <button mat-stroked-button (click)="openAddAttendeeDialog()">
+                          Add Attendee
+                        </button>
+                      </div>
+                    }
+                  </mat-card>
+                </div>
+              }
+            } @else {
+              <div class="state-box">No action items generated yet.</div>
+            }
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+    }
+  </section>
+</div>
