@@ -1,8 +1,8 @@
 package com.autominutes.backend.controller;
 
-import com.autominutes.backend.dto.TranscriptCreateRequestDTO;
+import com.autominutes.backend.dto.TranscriptCreateRequest;
 import com.autominutes.backend.dto.TranscriptDTO;
-import com.autominutes.backend.dto.TranscriptUpdateRequestDTO;
+import com.autominutes.backend.dto.TranscriptUpdateRequest;
 import com.autominutes.backend.service.TranscriptService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -26,13 +26,13 @@ public class TranscriptController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TranscriptDTO submitTranscript(@PathVariable Long id,
-                                          @Valid @RequestBody TranscriptCreateRequestDTO request) {
+                                          @Valid @RequestBody TranscriptCreateRequest request) {
         return transcriptService.submitTranscript(id, request);
     }
 
     @PutMapping
     public TranscriptDTO updateTranscript(@PathVariable Long id,
-                                          @Valid @RequestBody TranscriptUpdateRequestDTO request) {
+                                          @Valid @RequestBody TranscriptUpdateRequest request) {
         return transcriptService.updateTranscript(id, request);
     }
 }

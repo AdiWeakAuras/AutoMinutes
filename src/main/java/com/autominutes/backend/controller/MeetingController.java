@@ -1,9 +1,9 @@
 package com.autominutes.backend.controller;
 
-import com.autominutes.backend.dto.MeetingCreateRequestDTO;
+import com.autominutes.backend.dto.MeetingCreateRequest;
 import com.autominutes.backend.dto.MeetingDTO;
 import com.autominutes.backend.dto.MeetingSummaryDTO;
-import com.autominutes.backend.dto.MeetingUpdateRequestDTO;
+import com.autominutes.backend.dto.MeetingUpdateRequest;
 import com.autominutes.backend.exception.ResourceNotFoundException;
 import com.autominutes.backend.service.MeetingService;
 import jakarta.validation.Valid;
@@ -36,13 +36,13 @@ public class MeetingController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public MeetingDTO createMeeting(@Valid @RequestBody MeetingCreateRequestDTO request) {
+  public MeetingDTO createMeeting(@Valid @RequestBody MeetingCreateRequest request) {
     return meetingService.createMeeting(request);
   }
 
   @PatchMapping("/{id}")
   public MeetingDTO updateMeeting(
-      @PathVariable Long id, @Valid @RequestBody MeetingUpdateRequestDTO request) {
+      @PathVariable Long id, @Valid @RequestBody MeetingUpdateRequest request) {
     return meetingService.updateMeeting(id, request);
   }
 

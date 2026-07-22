@@ -1,8 +1,8 @@
 package com.autominutes.backend.service;
 
-import com.autominutes.backend.dto.AttendeeCreateRequestDTO;
+import com.autominutes.backend.dto.AttendeeCreateRequest;
 import com.autominutes.backend.dto.AttendeeDTO;
-import com.autominutes.backend.dto.AttendeeUpdateRequestDTO;
+import com.autominutes.backend.dto.AttendeeUpdateRequest;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public interface AttendeeService {
      * @throws com.autominutes.backend.exception.ResourceNotFoundException  if the meeting does not exist
      * @throws com.autominutes.backend.exception.DuplicateResourceException if the attendee is already linked to this meeting
      */
-    AttendeeDTO addAttendeeToMeeting(Long meetingId, AttendeeCreateRequestDTO request);
+    AttendeeDTO addAttendeeToMeeting(Long meetingId, AttendeeCreateRequest request);
 
     /**
      * Partially updates an attendee's details. Fields left unset (null) remain unchanged.
@@ -58,7 +58,7 @@ public interface AttendeeService {
      * @return the updated attendee
      * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting-attendee link does not exist
      */
-    AttendeeDTO updateAttendee(Long meetingId, Long attendeeId, AttendeeUpdateRequestDTO request);
+    AttendeeDTO updateAttendee(Long meetingId, Long attendeeId, AttendeeUpdateRequest request);
 
     /**
      * Removes an attendee from a meeting (deletes only the link in {@code meeting_attendee}).

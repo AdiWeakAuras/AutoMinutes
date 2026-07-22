@@ -1,8 +1,8 @@
 package com.autominutes.backend.service.impl;
 
-import com.autominutes.backend.dto.TranscriptCreateRequestDTO;
+import com.autominutes.backend.dto.TranscriptCreateRequest;
 import com.autominutes.backend.dto.TranscriptDTO;
-import com.autominutes.backend.dto.TranscriptUpdateRequestDTO;
+import com.autominutes.backend.dto.TranscriptUpdateRequest;
 import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.entity.Transcript;
 import com.autominutes.backend.exception.DuplicateResourceException;
@@ -45,7 +45,7 @@ public class TranscriptServiceImpl implements TranscriptService {
 
     @Override
     @Transactional
-    public TranscriptDTO submitTranscript(Long meetingId, TranscriptCreateRequestDTO request) {
+    public TranscriptDTO submitTranscript(Long meetingId, TranscriptCreateRequest request) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
 
@@ -66,7 +66,7 @@ public class TranscriptServiceImpl implements TranscriptService {
 
     @Override
     @Transactional
-    public TranscriptDTO updateTranscript(Long meetingId, TranscriptUpdateRequestDTO request) {
+    public TranscriptDTO updateTranscript(Long meetingId, TranscriptUpdateRequest request) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> ResourceNotFoundException.forMeeting(meetingId));
 
