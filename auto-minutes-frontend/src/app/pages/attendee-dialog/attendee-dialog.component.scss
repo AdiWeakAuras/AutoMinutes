@@ -1,0 +1,94 @@
+// ─── Dialog title ────────────────────────────────────────────
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 16px !important;
+  margin: 0 !important;
+}
+
+.dialog-title__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #1d4ed8;
+  }
+
+  &--edit {
+    background: #ede9fe;
+
+    mat-icon {
+      color: #7c3aed;
+    }
+  }
+}
+
+.dialog-title__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dialog-title__main {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.dialog-title__sub {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+// ─── Form ────────────────────────────────────────────────────
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 420px;
+  padding-top: 4px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.hint--warn {
+  color: #b45309 !important;
+}
+
+// ─── Error ───────────────────────────────────────────────────
+
+.dialog-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #b91c1c;
+  font-size: 13px;
+  background: #fee2e2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 4px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+

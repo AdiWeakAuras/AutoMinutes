@@ -1,0 +1,134 @@
+<div class="page">
+  <div class="page__header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="page__subtitle">Welcome back — here's what's happening with your meetings.</p>
+    </div>
+    <a mat-raised-button color="primary" routerLink="/meetings">
+      <mat-icon>add</mat-icon>
+      New Meeting
+    </a>
+  </div>
+
+  @if (loading) {
+    <div class="state-box">
+      <mat-spinner diameter="28"></mat-spinner>
+      <span>Loading dashboard...</span>
+    </div>
+  }
+
+  @if (error) {
+    <div class="state-box state-box--error">
+      <mat-icon>error_outline</mat-icon>
+      {{ error }}
+      <button mat-stroked-button (click)="load()">
+        <mat-icon>refresh</mat-icon>
+        Reincearca
+      </button>
+    </div>
+  }
+
+  @if (!loading && !error) {
+    <!-- Stat cards -->
+    <div class="stat-grid">
+      <mat-card class="stat-card" appearance="outlined">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <mat-icon>event_note</mat-icon>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__number">{{ totalMeetings }}</div>
+          <div class="stat-card__label">Total Meetings</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card" appearance="outlined">
+        <div class="stat-card__icon stat-card__icon--green">
+          <mat-icon>task_alt</mat-icon>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__number">{{ completedCount }}</div>
+          <div class="stat-card__label">Processed</div>
+          @if (totalMeetings > 0) {
+            <div class="stat-card__sub">
+              {{ ((completedCount / totalMeetings) * 100).toFixed(0) }}% of total
+            </div>
+          }
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card" appearance="outlined">
+        <div class="stat-card__icon stat-card__icon--amber">
+          <mat-icon>hourglass_empty</mat-icon>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__number">{{ pendingCount }}</div>
+          <div class="stat-card__label">Pending</div>
+          @if (pendingCount > 0) {
+            <div class="stat-card__sub stat-card__sub--warn">Need processing</div>
+          }
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card" appearance="outlined">
+        <div class="stat-card__icon stat-card__icon--red">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__number">{{ failedCount }}</div>
+          <div class="stat-card__label">Failed</div>
+          @if (failedCount > 0) {
+            <div class="stat-card__sub stat-card__sub--error">Require attention</div>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Recent meetings -->
+    <mat-card class="recent-card" appearance="outlined">
+      <div class="recent-card__header">
+        <div>
+          <h2>Recent Meetings</h2>
+          <p class="recent-card__sub">Last {{ recentMeetings.length }} meetings, sorted by date</p>
+        </div>
+        <a mat-button color="primary" routerLink="/meetings">
+          View all
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      @if (recentMeetings.length) {
+        <div class="recent-list">
+          @for (m of recentMeetings; track m.id) {
+            <a class="recent-row" routerLink="/meetings">
+              <div class="recent-row__avatar">
+                {{ m.title[0].toUpperCase() }}
+              </div>
+              <div class="recent-row__main">
+                <div class="recent-row__title">{{ m.title }}</div>
+                <div class="recent-row__meta">
+                  <mat-icon>schedule</mat-icon>
+                  {{ formatDate(m.meetingDate) }}
+                  <span class="dot">·</span>
+                  <mat-icon>group</mat-icon>
+                  {{ m.attendeeCount }} attendee{{ m.attendeeCount !== 1 ? 's' : '' }}
+                </div>
+              </div>
+              <mat-chip [class]="statusClass(m.processingStatus)" disabled>
+                {{ m.processingStatus }}
+              </mat-chip>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <mat-icon>event_note</mat-icon>
+          <p>No meetings yet. Create your first one!</p>
+          <a mat-stroked-button routerLink="/meetings">
+            <mat-icon>add</mat-icon>
+            New Meeting
+          </a>
+        </div>
+      }
+    </mat-card>
+  }
+</div>

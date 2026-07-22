@@ -1,0 +1,73 @@
+<div mat-dialog-title class="dialog-title">
+  <div class="dialog-title__icon" [class.dialog-title__icon--edit]="isEdit">
+    <mat-icon>{{ isEdit ? 'edit_document' : 'upload_file' }}</mat-icon>
+  </div>
+  <div class="dialog-title__text">
+    <span class="dialog-title__main">
+      {{ isEdit ? 'Edit Transcript' : 'Submit Transcript' }}
+    </span>
+    <span class="dialog-title__sub">{{ data.meetingTitle }}</span>
+  </div>
+</div>
+
+<mat-dialog-content>
+  <div class="hint">
+    <mat-icon>info_outline</mat-icon>
+    <span>
+      @if (isEdit) {
+        Modifica textul transcriptului. Dupa salvare poti reprocesa meeting-ul cu AI.
+      } @else {
+        Introdu textul brut al intalnirii — transcriere verbatim, note sau orice text
+          care descrie ce s-a discutat. AI-ul va extrage rezumatul, deciziile si task-urile.
+      }
+    </span>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Continut transcript</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="content"
+      [disabled]="saving"
+      placeholder="Ex: Maria: Am discutat despre lansarea produsului in Q3&#10;Ion: Propun sa setam deadline-ul pe 15 septembrie..."
+      rows="12"
+    ></textarea>
+    <mat-hint align="start">
+      @if (content.trim().length === 0) {
+        Minim 10 caractere recomandat pentru rezultate AI bune
+      }
+    </mat-hint>
+    <mat-hint align="end">{{ content.trim().length }} caractere</mat-hint>
+  </mat-form-field>
+
+  @if (error) {
+    <div class="dialog-error">
+      <mat-icon>error_outline</mat-icon>
+      {{ error }}
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()" [disabled]="saving">Anuleaza</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="save()"
+    [disabled]="saving || !content.trim()"
+  >
+    <mat-spinner
+      diameter="16"
+      [style.display]="saving ? 'inline-block' : 'none'"
+      style="margin-right:6px; vertical-align:middle;">
+    </mat-spinner>
+    <mat-icon [style.display]="saving ? 'none' : 'inline'">
+      {{ isEdit ? 'save' : 'upload_file' }}
+    </mat-icon>
+    {{
+      saving
+        ? 'Se salveaza...'
+        : (isEdit ? 'Salveaza modificarile' : 'Trimite transcriptul')
+    }}
+  </button>
+</mat-dialog-actions>

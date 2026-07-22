@@ -37,19 +37,33 @@ public class AiProcessingServiceImpl implements AiProcessingService {
 
   private static final String JSON_INSTRUCTIONS =
       """
-            Respond ONLY with a single valid JSON object, with no extra commentary \
-            and no markdown code fences, matching exactly this structure:
-            {
-              "summary": "string",
-              "detailed_summary": "string",
-              "decisions": "string",
-              "follow_up_notes": "string",
-              "action_items": [
-                { "description": "string", "proposed_assignee": "string or null", \
-            "deadline": "YYYY-MM-DD or null", "status": "OPEN, IN_PROGRESS, DONE, or UNKNOWN" }
-              ]
-            }
-            """;
+              Respond ONLY with a single valid JSON object, with no extra commentary \
+              and no markdown code fences, matching exactly this structure:
+              {
+                "summary": "string",
+                "detailed_summary": "string",
+                "decisions": "string",
+                "follow_up_notes": "string",
+                "action_items": [
+                  {
+                    "description": "string",
+                    "proposed_assignee": "string or null",
+                    "deadline": "YYYY-MM-DD or null",
+                    "status": "OPEN, IN_PROGRESS, DONE, or UNKNOWN"
+                  }
+                ]
+              }
+
+              STRICT RULES — do not deviate:
+              1. "deadline" MUST be either null or a date in the format YYYY-MM-DD (e.g. "2026-07-22"). \
+              Never use free text like "after feedback" or "next week". \
+              If no specific date is mentioned, use null.
+              2. "status" MUST be exactly one of: OPEN, IN_PROGRESS, DONE, UNKNOWN. No other values.
+              3. Do not add any fields not listed above.
+              4. Do not wrap the JSON in markdown code fences.
+              5. Extract ALL tasks mentioned or implied in the transcript, one action item per task. \\
+                      Do not group multiple tasks into one item.
+              """;
 
   private final MeetingRepository meetingRepository;
   private final PromptTemplateRepository promptTemplateRepository;
@@ -94,7 +108,10 @@ public class AiProcessingServiceImpl implements AiProcessingService {
 
     PromptTemplate promptTemplate = resolvePromptTemplate(request);
     String basePrompt =
-        promptTemplate.getTemplateText().replace("{transcript}", transcript.getContent());
+        promptTemplate
+            .getTemplateText()
+            .replace("{transcript}", transcript.getContent())
+            .replace("{current_date}", LocalDate.now().toString());
     String fullPrompt = basePrompt + "\n\n" + JSON_INSTRUCTIONS;
 
     try {

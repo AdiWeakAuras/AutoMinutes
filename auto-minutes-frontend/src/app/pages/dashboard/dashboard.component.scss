@@ -1,0 +1,202 @@
+// Stilurile globale (state-box, empty-state, page, page__header,
+// page__subtitle, status-chip, icon-*) sunt in src/styles.scss
+
+:host {
+  display: block;
+}
+
+// ─── Stat Grid ───────────────────────────────────────────────
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.stat-card {
+  padding: 20px !important;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  &--purple {
+    background: #ede9fe;
+
+    mat-icon {
+      color: #7c3aed;
+    }
+  }
+
+  &--green {
+    background: #dcfce7;
+
+    mat-icon {
+      color: #15803d;
+    }
+  }
+
+  &--amber {
+    background: #fef3c7;
+
+    mat-icon {
+      color: #b45309;
+    }
+  }
+
+  &--red {
+    background: #fee2e2;
+
+    mat-icon {
+      color: #b91c1c;
+    }
+  }
+}
+
+.stat-card__body {
+  flex: 1;
+}
+
+.stat-card__number {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  color: #111827;
+}
+
+.stat-card__label {
+  font-size: 12.5px;
+  color: #6b7280;
+  margin-top: 3px;
+}
+
+.stat-card__sub {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+
+  &--warn {
+    color: #b45309;
+  }
+
+  &--error {
+    color: #b91c1c;
+  }
+}
+
+// ─── Recent meetings ─────────────────────────────────────────
+
+.recent-card {
+  margin-top: 20px;
+  padding: 20px !important;
+}
+
+.recent-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+}
+
+.recent-card__sub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recent-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: background 150ms ease;
+
+  &:hover {
+    background: #f9fafb;
+  }
+}
+
+.recent-row__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #ede9fe;
+  color: #7c3aed;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recent-row__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.recent-row__title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-row__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #9ca3af;
+  margin-top: 2px;
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+
+  .dot {
+    margin: 0 2px;
+  }
+}
+
+@media (max-width: 900px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

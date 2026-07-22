@@ -1,0 +1,75 @@
+// ─── Dialog title ────────────────────────────────────────────
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 16px !important;
+  margin: 0 !important;
+}
+
+.dialog-title__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: #1d4ed8;
+  }
+
+  &--edit {
+    background: #ede9fe;
+
+    mat-icon {
+      color: #7c3aed;
+    }
+  }
+}
+
+.dialog-title__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dialog-title__main {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.dialog-title__sub {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+// ─── Form ────────────────────────────────────────────────────
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 440px;
+  padding-top: 8px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+// ─── Actions ─────────────────────────────────────────────────
+
+::ng-deep .mat-mdc-dialog-actions {
+  padding: 8px 24px 20px !important;
+  gap: 8px;
+}

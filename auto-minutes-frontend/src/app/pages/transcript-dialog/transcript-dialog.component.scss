@@ -1,0 +1,121 @@
+// ─── Dialog title ────────────────────────────────────────────
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 16px !important;
+  margin: 0 !important;
+}
+
+.dialog-title__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #ede9fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: #7c3aed;
+  }
+
+  &--edit {
+    background: #dbeafe;
+
+    mat-icon {
+      color: #1d4ed8;
+    }
+  }
+}
+
+.dialog-title__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dialog-title__main {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.dialog-title__sub {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+// ─── Hint banner ─────────────────────────────────────────────
+
+.hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #f8f7ff;
+  border: 1px solid #ede9fe;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 16px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #7c3aed;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+}
+
+// ─── Form ────────────────────────────────────────────────────
+
+.full-width {
+  width: 100%;
+  min-width: 540px;
+
+  textarea {
+    resize: vertical;
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+}
+
+// ─── Error ───────────────────────────────────────────────────
+
+.dialog-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #b91c1c;
+  font-size: 13px;
+  background: #fee2e2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 12px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Actions ─────────────────────────────────────────────────
+
+::ng-deep .mat-mdc-dialog-actions {
+  padding: 8px 24px 20px !important;
+  gap: 8px;
+}
