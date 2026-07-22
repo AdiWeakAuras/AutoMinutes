@@ -1,8 +1,8 @@
 package com.autominutes.backend.controller;
 
-import com.autominutes.backend.dto.TranscriptCreateRequest;
+import com.autominutes.backend.dto.TranscriptCreateRequestDTO;
 import com.autominutes.backend.dto.TranscriptDTO;
-import com.autominutes.backend.dto.TranscriptUpdateRequest;
+import com.autominutes.backend.dto.TranscriptUpdateRequestDTO;
 import com.autominutes.backend.exception.DuplicateResourceException;
 import com.autominutes.backend.exception.ResourceNotFoundException;
 import com.autominutes.backend.service.TranscriptService;
@@ -53,9 +53,9 @@ class TranscriptControllerTest {
 
     @Test
     void submitTranscript_returns201WhenValid() throws Exception {
-        TranscriptCreateRequest request = new TranscriptCreateRequest("Ana: hello");
+        TranscriptCreateRequestDTO request = new TranscriptCreateRequestDTO("Ana: hello");
         TranscriptDTO dto = new TranscriptDTO(1L, "Ana: hello", null, List.of());
-        when(transcriptService.submitTranscript(eq(1L), any(TranscriptCreateRequest.class))).thenReturn(dto);
+        when(transcriptService.submitTranscript(eq(1L), any(TranscriptCreateRequestDTO.class))).thenReturn(dto);
 
         mockMvc.perform(post("/api/meetings/1/transcript")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -66,7 +66,7 @@ class TranscriptControllerTest {
 
     @Test
     void submitTranscript_returns400WhenContentBlank() throws Exception {
-        TranscriptCreateRequest request = new TranscriptCreateRequest("");
+        TranscriptCreateRequestDTO request = new TranscriptCreateRequestDTO("");
 
         mockMvc.perform(post("/api/meetings/1/transcript")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,8 +76,8 @@ class TranscriptControllerTest {
 
     @Test
     void submitTranscript_returns409WhenAlreadyExists() throws Exception {
-        TranscriptCreateRequest request = new TranscriptCreateRequest("Ana: hello");
-        when(transcriptService.submitTranscript(eq(1L), any(TranscriptCreateRequest.class)))
+        TranscriptCreateRequestDTO request = new TranscriptCreateRequestDTO("Ana: hello");
+        when(transcriptService.submitTranscript(eq(1L), any(TranscriptCreateRequestDTO.class)))
                 .thenThrow(DuplicateResourceException.forTranscript(1L));
 
         mockMvc.perform(post("/api/meetings/1/transcript")
@@ -88,9 +88,9 @@ class TranscriptControllerTest {
 
     @Test
     void updateTranscript_returns200() throws Exception {
-        TranscriptUpdateRequest request = new TranscriptUpdateRequest("updated content");
+        TranscriptUpdateRequestDTO request = new TranscriptUpdateRequestDTO("updated content");
         TranscriptDTO dto = new TranscriptDTO(1L, "updated content", null, List.of());
-        when(transcriptService.updateTranscript(eq(1L), any(TranscriptUpdateRequest.class))).thenReturn(dto);
+        when(transcriptService.updateTranscript(eq(1L), any(TranscriptUpdateRequestDTO.class))).thenReturn(dto);
 
         mockMvc.perform(put("/api/meetings/1/transcript")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +101,7 @@ class TranscriptControllerTest {
 
     @Test
     void updateTranscript_returns400WhenContentBlank() throws Exception {
-        TranscriptUpdateRequest request = new TranscriptUpdateRequest(" ");
+        TranscriptUpdateRequestDTO request = new TranscriptUpdateRequestDTO(" ");
 
         mockMvc.perform(put("/api/meetings/1/transcript")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -111,8 +111,8 @@ class TranscriptControllerTest {
 
     @Test
     void updateTranscript_returns404WhenNoTranscriptYet() throws Exception {
-        TranscriptUpdateRequest request = new TranscriptUpdateRequest("updated content");
-        when(transcriptService.updateTranscript(eq(1L), any(TranscriptUpdateRequest.class)))
+        TranscriptUpdateRequestDTO request = new TranscriptUpdateRequestDTO("updated content");
+        when(transcriptService.updateTranscript(eq(1L), any(TranscriptUpdateRequestDTO.class)))
                 .thenThrow(ResourceNotFoundException.forTranscript(1L));
 
         mockMvc.perform(put("/api/meetings/1/transcript")

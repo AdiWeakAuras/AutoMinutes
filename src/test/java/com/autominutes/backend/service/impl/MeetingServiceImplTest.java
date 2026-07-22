@@ -1,9 +1,9 @@
 package com.autominutes.backend.service.impl;
 
-import com.autominutes.backend.dto.MeetingCreateRequest;
+import com.autominutes.backend.dto.MeetingCreateRequestDTO;
 import com.autominutes.backend.dto.MeetingDTO;
 import com.autominutes.backend.dto.MeetingSummaryDTO;
-import com.autominutes.backend.dto.MeetingUpdateRequest;
+import com.autominutes.backend.dto.MeetingUpdateRequestDTO;
 import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.entity.ProcessingStatus;
 import com.autominutes.backend.exception.ResourceNotFoundException;
@@ -89,7 +89,7 @@ class MeetingServiceImplTest {
 
     @Test
     void createMeeting_savesAndReturnsDto() {
-        MeetingCreateRequest request = new MeetingCreateRequest("Title", "Desc", LocalDateTime.now());
+        MeetingCreateRequestDTO request = new MeetingCreateRequestDTO("Title", "Desc", LocalDateTime.now());
         Meeting entity = new Meeting();
         Meeting saved = new Meeting();
         MeetingDTO dto = new MeetingDTO(1L, "Title", "Desc", LocalDateTime.now(),
@@ -107,7 +107,7 @@ class MeetingServiceImplTest {
 
     @Test
     void updateMeeting_throwsWhenNotFound() {
-        MeetingUpdateRequest request = new MeetingUpdateRequest("New title", null, null, null);
+        MeetingUpdateRequestDTO request = new MeetingUpdateRequestDTO("New title", null, null, null);
         when(meetingRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> meetingService.updateMeeting(1L, request))
@@ -118,7 +118,7 @@ class MeetingServiceImplTest {
 
     @Test
     void updateMeeting_appliesPatchAndSaves() {
-        MeetingUpdateRequest request = new MeetingUpdateRequest("New title", null, null, null);
+        MeetingUpdateRequestDTO request = new MeetingUpdateRequestDTO("New title", null, null, null);
         Meeting meeting = new Meeting();
         MeetingDTO dto = new MeetingDTO(1L, "New title", "Desc", LocalDateTime.now(),
                 ProcessingStatus.PENDING, null, List.of());
