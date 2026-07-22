@@ -1,7 +1,7 @@
 package com.autominutes.backend.service.impl;
 
 import com.autominutes.backend.dto.AIResultDTO;
-import com.autominutes.backend.dto.ProcessMeetingRequestDTO;
+import com.autominutes.backend.dto.ProcessMeetingRequest;
 import com.autominutes.backend.entity.ActionItem;
 import com.autominutes.backend.entity.ActionItemStatus;
 import com.autominutes.backend.entity.AIResult;
@@ -92,7 +92,7 @@ public class AiProcessingServiceImpl implements AiProcessingService {
 
   @Override
   @Transactional
-  public AIResultDTO processTranscript(Long meetingId, ProcessMeetingRequestDTO request) {
+  public AIResultDTO processTranscript(Long meetingId, ProcessMeetingRequest request) {
     Meeting meeting =
         meetingRepository
             .findById(meetingId)
@@ -153,7 +153,7 @@ public class AiProcessingServiceImpl implements AiProcessingService {
     return transcript.getAiResults().stream().map(aiResultMapper::toDto).toList();
   }
 
-  private PromptTemplate resolvePromptTemplate(ProcessMeetingRequestDTO request) {
+  private PromptTemplate resolvePromptTemplate(ProcessMeetingRequest request) {
     if (request != null && request.promptTemplateId() != null) {
       return promptTemplateRepository
           .findById(request.promptTemplateId())

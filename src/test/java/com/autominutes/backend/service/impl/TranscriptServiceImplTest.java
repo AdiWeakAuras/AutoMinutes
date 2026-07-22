@@ -1,8 +1,8 @@
 package com.autominutes.backend.service.impl;
 
-import com.autominutes.backend.dto.TranscriptCreateRequestDTO;
+import com.autominutes.backend.dto.TranscriptCreateRequest;
 import com.autominutes.backend.dto.TranscriptDTO;
-import com.autominutes.backend.dto.TranscriptUpdateRequestDTO;
+import com.autominutes.backend.dto.TranscriptUpdateRequest;
 import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.entity.Transcript;
 import com.autominutes.backend.exception.DuplicateResourceException;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class   TranscriptServiceImplTest {
+class TranscriptServiceImplTest {
 
     @Mock private TranscriptRepository transcriptRepository;
     @Mock private MeetingRepository meetingRepository;
@@ -65,7 +65,7 @@ class   TranscriptServiceImplTest {
 
     @Test
     void submitTranscript_throwsWhenMeetingMissing() {
-        TranscriptCreateRequestDTO request = new TranscriptCreateRequestDTO("content");
+        TranscriptCreateRequest request = new TranscriptCreateRequest("content");
         when(meetingRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> transcriptService.submitTranscript(1L, request))
@@ -74,7 +74,7 @@ class   TranscriptServiceImplTest {
 
     @Test
     void submitTranscript_throwsWhenTranscriptAlreadyExists() {
-        TranscriptCreateRequestDTO request = new TranscriptCreateRequestDTO("content");
+        TranscriptCreateRequest request = new TranscriptCreateRequest("content");
         Meeting meeting = new Meeting();
         meeting.setTranscript(new Transcript());
 
@@ -88,7 +88,7 @@ class   TranscriptServiceImplTest {
 
     @Test
     void submitTranscript_savesAndLinksBothSides() {
-        TranscriptCreateRequestDTO request = new TranscriptCreateRequestDTO("Ana: hello");
+        TranscriptCreateRequest request = new TranscriptCreateRequest("Ana: hello");
         Meeting meeting = new Meeting();
         Transcript entity = new Transcript();
         Transcript saved = new Transcript();
@@ -109,7 +109,7 @@ class   TranscriptServiceImplTest {
 
     @Test
     void updateTranscript_throwsWhenMeetingMissing() {
-        TranscriptUpdateRequestDTO request = new TranscriptUpdateRequestDTO("updated");
+        TranscriptUpdateRequest request = new TranscriptUpdateRequest("updated");
         when(meetingRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> transcriptService.updateTranscript(1L, request))
@@ -118,7 +118,7 @@ class   TranscriptServiceImplTest {
 
     @Test
     void updateTranscript_throwsWhenNoExistingTranscript() {
-        TranscriptUpdateRequestDTO request = new TranscriptUpdateRequestDTO("updated");
+        TranscriptUpdateRequest request = new TranscriptUpdateRequest("updated");
         Meeting meeting = new Meeting();
         when(meetingRepository.findById(1L)).thenReturn(Optional.of(meeting));
 
@@ -128,7 +128,7 @@ class   TranscriptServiceImplTest {
 
     @Test
     void updateTranscript_updatesContentAndSaves() {
-        TranscriptUpdateRequestDTO request = new TranscriptUpdateRequestDTO("updated content");
+        TranscriptUpdateRequest request = new TranscriptUpdateRequest("updated content");
         Meeting meeting = new Meeting();
         Transcript transcript = new Transcript();
         transcript.setContent("old content");

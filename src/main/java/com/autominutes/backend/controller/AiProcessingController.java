@@ -1,7 +1,7 @@
 package com.autominutes.backend.controller;
 
 import com.autominutes.backend.dto.AIResultDTO;
-import com.autominutes.backend.dto.ProcessMeetingRequestDTO;
+import com.autominutes.backend.dto.ProcessMeetingRequest;
 import com.autominutes.backend.service.AiProcessingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class AiProcessingController {
     @PostMapping("/{meetingId}/process")
     @ResponseStatus(HttpStatus.CREATED)
     public AIResultDTO processTranscript(@PathVariable Long meetingId,
-                                         @RequestBody(required = false) ProcessMeetingRequestDTO request) {
+                                         @RequestBody(required = false) ProcessMeetingRequest request) {
         return aiProcessingService.processTranscript(meetingId, request);
     }
 

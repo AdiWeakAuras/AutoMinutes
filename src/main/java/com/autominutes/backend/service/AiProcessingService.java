@@ -1,7 +1,7 @@
 package com.autominutes.backend.service;
 
 import com.autominutes.backend.dto.AIResultDTO;
-import com.autominutes.backend.dto.ProcessMeetingRequestDTO;
+import com.autominutes.backend.dto.ProcessMeetingRequest;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public interface AiProcessingService {
      * @throws com.autominutes.backend.exception.AiProcessingException    if the LLM's response cannot be parsed
      *                                                                    or does not match the expected schema
      */
-    AIResultDTO processTranscript(Long meetingId, ProcessMeetingRequestDTO request);
+    AIResultDTO processTranscript(Long meetingId, ProcessMeetingRequest request);
 
     /**
      * Lists all AI results generated for a meeting's transcript, including

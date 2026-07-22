@@ -1,8 +1,8 @@
 package com.autominutes.backend.service;
 
-import com.autominutes.backend.dto.TranscriptCreateRequestDTO;
+import com.autominutes.backend.dto.TranscriptCreateRequest;
 import com.autominutes.backend.dto.TranscriptDTO;
-import com.autominutes.backend.dto.TranscriptUpdateRequestDTO;
+import com.autominutes.backend.dto.TranscriptUpdateRequest;
 
 /**
  * Service for managing a meeting's transcript.
@@ -31,7 +31,7 @@ public interface TranscriptService {
      * @throws com.autominutes.backend.exception.ResourceNotFoundException  if the meeting does not exist
      * @throws com.autominutes.backend.exception.DuplicateResourceException if the meeting already has a transcript
      */
-    TranscriptDTO submitTranscript(Long meetingId, TranscriptCreateRequestDTO request);
+    TranscriptDTO submitTranscript(Long meetingId, TranscriptCreateRequest request);
 
     /**
      * Fully replaces the content of an existing transcript.
@@ -42,5 +42,5 @@ public interface TranscriptService {
      * @throws com.autominutes.backend.exception.ResourceNotFoundException if the meeting does not exist
      *                                                                     or has no associated transcript
      */
-    TranscriptDTO updateTranscript(Long meetingId, TranscriptUpdateRequestDTO request);
+    TranscriptDTO updateTranscript(Long meetingId, TranscriptUpdateRequest request);
 }

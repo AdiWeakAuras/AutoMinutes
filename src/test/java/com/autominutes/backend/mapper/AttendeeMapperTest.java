@@ -1,8 +1,8 @@
 package com.autominutes.backend.mapper;
 
-import com.autominutes.backend.dto.AttendeeCreateRequestDTO;
+import com.autominutes.backend.dto.AttendeeCreateRequest;
 import com.autominutes.backend.dto.AttendeeDTO;
-import com.autominutes.backend.dto.AttendeeUpdateRequestDTO;
+import com.autominutes.backend.dto.AttendeeUpdateRequest;
 import com.autominutes.backend.entity.Attendee;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +30,7 @@ class AttendeeMapperTest {
 
     @Test
     void toEntity_mapsRequestFieldsAndLeavesIdNull() {
-        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("Radu", "radu@example.com", "DEVELOPER");
+        AttendeeCreateRequest request = new AttendeeCreateRequest("Radu", "radu@example.com", "DEVELOPER");
 
         Attendee entity = mapper.toEntity(request);
 
@@ -48,7 +48,7 @@ class AttendeeMapperTest {
         attendee.setEmail("old@example.com");
         attendee.setRole("OLD_ROLE");
 
-        AttendeeUpdateRequestDTO request = new AttendeeUpdateRequestDTO("New name", null, null);
+        AttendeeUpdateRequest request = new AttendeeUpdateRequest("New name", null, null);
 
         mapper.updateEntityFromRequest(request, attendee);
 
@@ -64,7 +64,7 @@ class AttendeeMapperTest {
         attendee.setId(5L);
         attendee.setName("Name");
 
-        AttendeeUpdateRequestDTO request = new AttendeeUpdateRequestDTO("Name", "new@example.com", "ROLE");
+        AttendeeUpdateRequest request = new AttendeeUpdateRequest("Name", "new@example.com", "ROLE");
 
         mapper.updateEntityFromRequest(request, attendee);
 

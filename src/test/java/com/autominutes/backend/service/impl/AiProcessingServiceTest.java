@@ -1,7 +1,7 @@
 package com.autominutes.backend.service.impl;
 
 import com.autominutes.backend.dto.AIResultDTO;
-import com.autominutes.backend.dto.ProcessMeetingRequestDTO;
+import com.autominutes.backend.dto.ProcessMeetingRequest;
 import com.autominutes.backend.entity.AIResult;
 import com.autominutes.backend.entity.ActionItem;
 import com.autominutes.backend.entity.ActionItemStatus;
@@ -105,7 +105,7 @@ class AiProcessingServiceImplTest {
         when(promptTemplateRepository.findById(42L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
-                aiProcessingService.processTranscript(1L, new ProcessMeetingRequestDTO(42L)))
+                aiProcessingService.processTranscript(1L, new ProcessMeetingRequest(42L)))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 

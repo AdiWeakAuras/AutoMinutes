@@ -1,6 +1,6 @@
 package com.autominutes.backend.mapper;
 
-import com.autominutes.backend.dto.TranscriptCreateRequestDTO;
+import com.autominutes.backend.dto.TranscriptCreateRequest;
 import com.autominutes.backend.dto.TranscriptDTO;
 import com.autominutes.backend.entity.AIResult;
 import com.autominutes.backend.entity.Transcript;
@@ -43,7 +43,7 @@ class TranscriptMapperTest {
 
     @Test
     void toEntity_ignoresIdAndMeeting() {
-        TranscriptCreateRequestDTO request = new TranscriptCreateRequestDTO("Some transcript content");
+        TranscriptCreateRequest request = new TranscriptCreateRequest("Some transcript content");
 
         Transcript entity = transcriptMapper.toEntity(request);
 

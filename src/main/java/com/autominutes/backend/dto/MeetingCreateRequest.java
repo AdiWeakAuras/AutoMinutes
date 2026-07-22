@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-public record MeetingCreateRequestDTO(
+public record MeetingCreateRequest(
         @NotBlank(message = "Meeting title cannot be blanked")
         String title,
 

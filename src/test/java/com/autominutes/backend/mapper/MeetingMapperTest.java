@@ -1,8 +1,8 @@
 package com.autominutes.backend.mapper;
 
-import com.autominutes.backend.dto.MeetingCreateRequestDTO;
+import com.autominutes.backend.dto.MeetingCreateRequest;
 import com.autominutes.backend.dto.MeetingDTO;
-import com.autominutes.backend.dto.MeetingUpdateRequestDTO;
+import com.autominutes.backend.dto.MeetingUpdateRequest;
 import com.autominutes.backend.entity.Attendee;
 import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.entity.MeetingAttendee;
@@ -79,7 +79,7 @@ class MeetingMapperTest {
 
     @Test
     void toEntity_mapsCreateRequestFields() {
-        MeetingCreateRequestDTO request = new MeetingCreateRequestDTO("Title", "Desc",
+        MeetingCreateRequest request = new MeetingCreateRequest("Title", "Desc",
                 LocalDateTime.of(2026, 8, 1, 9, 0));
 
         Meeting entity = meetingMapper.toEntity(request);
@@ -99,7 +99,7 @@ class MeetingMapperTest {
         meeting.setMeetingDate(LocalDateTime.of(2026, 1, 1, 0, 0));
         meeting.setProcessingStatus(ProcessingStatus.PENDING);
 
-        MeetingUpdateRequestDTO request = new MeetingUpdateRequestDTO("New title", null, null, ProcessingStatus.DONE);
+        MeetingUpdateRequest request = new MeetingUpdateRequest("New title", null, null, ProcessingStatus.DONE);
 
         meetingMapper.updateEntityFromRequest(request, meeting);
 
