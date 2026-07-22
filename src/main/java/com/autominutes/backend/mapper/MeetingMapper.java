@@ -18,13 +18,13 @@ public interface MeetingMapper {
   @Mapping(target = "attendees", source = "meetingAttendees")
   MeetingDTO toDto(Meeting meeting);
 
-  Meeting toEntity(MeetingCreateRequest request);
+  Meeting toEntity(MeetingCreateRequestDTO request);
 
   // now if any field is null in the request it doesn't override the actual value in the entity
   @Mapping(target = "id", ignore = true)
   @org.mapstruct.BeanMapping(
       nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  void updateEntityFromRequest(MeetingUpdateRequest request, @MappingTarget Meeting meeting);
+  void updateEntityFromRequest(MeetingUpdateRequestDTO request, @MappingTarget Meeting meeting);
 
   // extracts the attendee from every MeetingAttendee
   default List<AttendeeDTO> mapAttendees(List<MeetingAttendee> meetingAttendees) {

@@ -1,9 +1,9 @@
 package com.autominutes.backend.controller;
 
-import com.autominutes.backend.dto.MeetingCreateRequest;
+import com.autominutes.backend.dto.MeetingCreateRequestDTO;
 import com.autominutes.backend.dto.MeetingDTO;
 import com.autominutes.backend.dto.MeetingSummaryDTO;
-import com.autominutes.backend.dto.MeetingUpdateRequest;
+import com.autominutes.backend.dto.MeetingUpdateRequestDTO;
 import com.autominutes.backend.entity.ProcessingStatus;
 import com.autominutes.backend.exception.ResourceNotFoundException;
 import com.autominutes.backend.service.MeetingService;
@@ -71,10 +71,10 @@ class MeetingControllerTest {
 
     @Test
     void createMeeting_returns201WhenValid() throws Exception {
-        MeetingCreateRequest request = new MeetingCreateRequest("Title", "Desc", LocalDateTime.now());
+        MeetingCreateRequestDTO request = new MeetingCreateRequestDTO("Title", "Desc", LocalDateTime.now());
         MeetingDTO dto = new MeetingDTO(1L, "Title", "Desc", LocalDateTime.now(),
                 ProcessingStatus.PENDING, null, List.of());
-        when(meetingService.createMeeting(any(MeetingCreateRequest.class))).thenReturn(dto);
+        when(meetingService.createMeeting(any(MeetingCreateRequestDTO.class))).thenReturn(dto);
 
         mockMvc.perform(post("/api/meetings")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +85,7 @@ class MeetingControllerTest {
 
     @Test
     void createMeeting_returns400WhenTitleBlank() throws Exception {
-        MeetingCreateRequest request = new MeetingCreateRequest("", "Desc", LocalDateTime.now());
+        MeetingCreateRequestDTO request = new MeetingCreateRequestDTO("", "Desc", LocalDateTime.now());
 
         mockMvc.perform(post("/api/meetings")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +95,7 @@ class MeetingControllerTest {
 
     @Test
     void createMeeting_returns400WhenDateMissing() throws Exception {
-        MeetingCreateRequest request = new MeetingCreateRequest("Title", "Desc", null);
+        MeetingCreateRequestDTO request = new MeetingCreateRequestDTO("Title", "Desc", null);
 
         mockMvc.perform(post("/api/meetings")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,10 +105,10 @@ class MeetingControllerTest {
 
     @Test
     void updateMeeting_returns200() throws Exception {
-        MeetingUpdateRequest request = new MeetingUpdateRequest("New title", null, null, null);
+        MeetingUpdateRequestDTO request = new MeetingUpdateRequestDTO("New title", null, null, null);
         MeetingDTO dto = new MeetingDTO(1L, "New title", "Desc", LocalDateTime.now(),
                 ProcessingStatus.PENDING, null, List.of());
-        when(meetingService.updateMeeting(eq(1L), any(MeetingUpdateRequest.class))).thenReturn(dto);
+        when(meetingService.updateMeeting(eq(1L), any(MeetingUpdateRequestDTO.class))).thenReturn(dto);
 
         mockMvc.perform(patch("/api/meetings/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -119,8 +119,8 @@ class MeetingControllerTest {
 
     @Test
     void updateMeeting_returns404WhenServiceThrows() throws Exception {
-        MeetingUpdateRequest request = new MeetingUpdateRequest("New title", null, null, null);
-        when(meetingService.updateMeeting(eq(99L), any(MeetingUpdateRequest.class)))
+        MeetingUpdateRequestDTO request = new MeetingUpdateRequestDTO("New title", null, null, null);
+        when(meetingService.updateMeeting(eq(99L), any(MeetingUpdateRequestDTO.class)))
                 .thenThrow(ResourceNotFoundException.forMeeting(99L));
 
         mockMvc.perform(patch("/api/meetings/99")
