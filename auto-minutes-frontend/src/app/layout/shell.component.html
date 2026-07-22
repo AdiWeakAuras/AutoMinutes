@@ -1,0 +1,75 @@
+<mat-sidenav-container class="shell">
+
+  <!-- Sidebar -->
+  <mat-sidenav mode="side" opened class="sidebar">
+
+    <div class="brand">
+      <div class="brand__icon">
+        <mat-icon>auto_awesome</mat-icon>
+      </div>
+      <div>
+        <div class="brand__name">AutoMinutes</div>
+        <div class="brand__tag">AI Meeting Manager</div>
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <nav class="nav">
+      @for (item of navItems; track item.path) {
+        <a
+          class="nav__item"
+          [routerLink]="item.path"
+          routerLinkActive="nav__item--active"
+        >
+          <mat-icon class="nav__icon">{{ item.icon }}</mat-icon>
+          <span class="nav__label">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+  </mat-sidenav>
+
+  <!-- Main -->
+  <mat-sidenav-content class="main">
+
+    <header class="topbar">
+      <div class="topbar__left">
+        <span class="topbar__title">AutoMinutes</span>
+      </div>
+
+      <div class="topbar__right">
+
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
+          <div class="user-avatar">AP</div>
+          <div class="user-info">
+            <div class="user-info__name">Ana Popescu</div>
+            <div class="user-info__role">Project Manager</div>
+          </div>
+          <mat-icon class="user-chevron">expand_more</mat-icon>
+        </button>
+
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item>
+            <mat-icon>person_outline</mat-icon>
+            Profile
+          </button>
+          <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            Settings
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item>
+            <mat-icon>logout</mat-icon>
+            Sign out
+          </button>
+        </mat-menu>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>
