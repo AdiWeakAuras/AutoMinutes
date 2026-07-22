@@ -2,7 +2,7 @@ package com.autominutes.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record TranscriptCreateRequest(
+public record TranscriptCreateRequestDTO(
         @NotBlank(message = "The content field cannot be blank")
         String content
 ) {}

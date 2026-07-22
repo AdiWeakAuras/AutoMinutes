@@ -1,8 +1,8 @@
 package com.autominutes.backend.service.impl;
 
-import com.autominutes.backend.dto.AttendeeCreateRequest;
+import com.autominutes.backend.dto.AttendeeCreateRequestDTO;
 import com.autominutes.backend.dto.AttendeeDTO;
-import com.autominutes.backend.dto.AttendeeUpdateRequest;
+import com.autominutes.backend.dto.AttendeeUpdateRequestDTO;
 import com.autominutes.backend.entity.Attendee;
 import com.autominutes.backend.entity.Meeting;
 import com.autominutes.backend.entity.MeetingAttendee;
@@ -86,7 +86,7 @@ class AttendeeServiceImplTest {
 
     @Test
     void addAttendeeToMeeting_throwsWhenMeetingMissing() {
-        AttendeeCreateRequest request = new AttendeeCreateRequest("Ana", "ana@example.com", "PM");
+        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("Ana", "ana@example.com", "PM");
         when(meetingRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> attendeeService.addAttendeeToMeeting(1L, request))
@@ -95,7 +95,7 @@ class AttendeeServiceImplTest {
 
     @Test
     void addAttendeeToMeeting_reusesExistingAttendeeByEmail_andLinksIt() {
-        AttendeeCreateRequest request = new AttendeeCreateRequest("Ana", "ana@example.com", "PM");
+        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("Ana", "ana@example.com", "PM");
         Meeting meeting = new Meeting();
         Attendee existing = new Attendee();
         existing.setId(5L);
@@ -115,7 +115,7 @@ class AttendeeServiceImplTest {
 
     @Test
     void addAttendeeToMeeting_createsNewAttendeeWhenEmailUnknown() {
-        AttendeeCreateRequest request = new AttendeeCreateRequest("Maria", "maria@example.com", "STAKEHOLDER");
+        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("Maria", "maria@example.com", "STAKEHOLDER");
         Meeting meeting = new Meeting();
         Attendee newEntity = new Attendee();
         Attendee saved = new Attendee();
@@ -136,7 +136,7 @@ class AttendeeServiceImplTest {
 
     @Test
     void addAttendeeToMeeting_throwsWhenAlreadyLinked() {
-        AttendeeCreateRequest request = new AttendeeCreateRequest("Ana", "ana@example.com", "PM");
+        AttendeeCreateRequestDTO request = new AttendeeCreateRequestDTO("Ana", "ana@example.com", "PM");
         Meeting meeting = new Meeting();
         Attendee existing = new Attendee();
         existing.setId(5L);
@@ -154,7 +154,7 @@ class AttendeeServiceImplTest {
 
     @Test
     void updateAttendee_throwsWhenLinkMissing() {
-        AttendeeUpdateRequest request = new AttendeeUpdateRequest("New name", null, null);
+        AttendeeUpdateRequestDTO request = new AttendeeUpdateRequestDTO("New name", null, null);
         when(meetingAttendeeRepository.findByMeetingIdAndAttendeeId(1L, 2L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> attendeeService.updateAttendee(1L, 2L, request))
@@ -163,7 +163,7 @@ class AttendeeServiceImplTest {
 
     @Test
     void updateAttendee_appliesPatchAndSaves() {
-        AttendeeUpdateRequest request = new AttendeeUpdateRequest("New name", null, null);
+        AttendeeUpdateRequestDTO request = new AttendeeUpdateRequestDTO("New name", null, null);
         Attendee attendee = new Attendee();
         MeetingAttendee link = new MeetingAttendee();
         link.setAttendee(attendee);
