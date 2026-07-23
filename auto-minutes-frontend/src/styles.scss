@@ -285,6 +285,17 @@ mat-card.mat-mdc-card {
   .mat-mdc-form-field-subscript-wrapper {
     display: none;
   }
+
+  .mat-mdc-form-field-infix {
+    display: flex;
+    align-items: center;
+    padding-top: 8px; 
+    padding-bottom: 8px;
+  }
+
+  input {
+    transform: translateY(-2px);
+  }
 }
 
 // ─── Avatar + name cell (Attendees) ──────────────────────────
@@ -309,3 +320,26 @@ mat-card.mat-mdc-card {
   font-weight: 500;
 }
 
+// ─── Material Component Global Fixes ─────────────────────────
+
+// Fix for number touching the left edge
+.mat-mdc-paginator-page-size-select .mat-mdc-select-trigger {
+  padding-left: 8px !important;
+}
+
+.mat-mdc-paginator-page-size-select .mat-mdc-select-value-text {
+  margin-left: 4px;
+}
+
+// Fix for Dropdown Menus 
+.mat-mdc-menu-panel {
+  background-color: var(--surface-card) !important; 
+  z-index: 1050 !important;
+  box-shadow: var(--shadow-lg) !important; 
+}
+
+.mat-mdc-select-panel {
+  background-color: var(--surface-card) !important;
+  z-index: 1050 !important;
+  box-shadow: var(--shadow-lg) !important;
+}
